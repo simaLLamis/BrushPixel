@@ -1,0 +1,62 @@
+/* Pied de page */
+footer {
+  background-color: var(--gray-900);
+  color: var(--gray-300);
+  padding-top: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+footer h5 {
+  color: var(--neon-cyan);
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-md);
+}
+
+footer ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: var(--space-4);
+}
+
+footer ul li {
+  margin-bottom: var(--space-2);
+}
+
+footer a {
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+.footer-bottom {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--neon-cyan);
+  margin-top: var(--space-4);
+}
+
+.footer-bottom p {
+  margin-bottom: 0;
+  font-size: var(--fs-sm);
+}
+
+.social-icons a {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 36px;
+  margin-right: var(--space-2);
+  transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+  background-color: var(--neon-cyan);
+  color: var(--dark-bg);
+}

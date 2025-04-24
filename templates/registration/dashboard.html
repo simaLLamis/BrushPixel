@@ -1,0 +1,1034 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Dashboard | Brush & Pixel{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- Dashboard Layout -->
+    <div class="dashboard-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-info">
+                <div class="user-avatar">JD</div>
+                <div class="user-details">
+                    <h5>John Doe</h5>
+                    <p>Art Enthusiast</p>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-sidebar flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#profile" data-bs-toggle="tab">
+                <i class="fas fa-user"></i> My Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#cart" data-bs-toggle="tab">
+                <i class="fas fa-shopping-cart"></i> Shopping Cart
+                <span class="badge bg-primary rounded-pill ms-auto">2</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#orders" data-bs-toggle="tab">
+                <i class="fas fa-history"></i> Order History
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#bookmarks" data-bs-toggle="tab">
+                <i class="fas fa-heart"></i> Bookmarks
+                <span class="badge bg-secondary rounded-pill ms-auto">5</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#commissions" data-bs-toggle="tab">
+                <i class="fas fa-paint-brush"></i> My Commissions
+                </a>
+            </li>
+
+            <li class="nav-item mt-5">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn nav-link text-danger w-100"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </form>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content-wrapper">
+        <div class="tab-content">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade show active" id="dashboard">
+            <div class="dashboard-header">
+            <h2>Dashboard</h2>
+            <div>
+                <span class="text-muted me-2">Last login: Today, 10:25 AM</span>
+            </div>
+            </div>
+
+            <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                <div class="card-body text-center">
+                    <i
+                    class="fas fa-shopping-bag fa-3x mb-3"
+                    style="color: var(--bp-primary)"
+                    ></i>
+                    <h5>Active Orders</h5>
+                    <p class="display-4 fw-bold">2</p>
+                    <a
+                    href="#orders"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="tab"
+                    >View All Orders</a
+                    >
+                </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                <div class="card-body text-center">
+                    <i
+                    class="fas fa-heart fa-3x mb-3"
+                    style="color: var(--bp-secondary)"
+                    ></i>
+                    <h5>Bookmarked Items</h5>
+                    <p class="display-4 fw-bold">5</p>
+                    <a
+                    href="#bookmarks"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="tab"
+                    >View Bookmarks</a
+                    >
+                </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                <div class="card-body text-center">
+                    <i
+                    class="fas fa-paint-brush fa-3x mb-3"
+                    style="color: var(--bp-accent)"
+                    ></i>
+                    <h5>Commissions</h5>
+                    <p class="display-4 fw-bold">1</p>
+                    <a
+                    href="#commissions"
+                    class="btn btn-sm btn-outline-primary"
+                    data-bs-toggle="tab"
+                    >View Commissions</a
+                    >
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                <div
+                    class="card-header d-flex justify-content-between align-items-center"
+                >
+                    <h5>Recent Orders</h5>
+                    <a
+                    href="#orders"
+                    class="btn btn-sm btn-link"
+                    data-bs-toggle="tab"
+                    >View All</a
+                    >
+                </div>
+                <div class="card-body">
+                    <div class="order-card p-3 mb-3 border rounded">
+                    <div class="order-header">
+                        <div>
+                        <span class="order-id">#38293</span>
+                        <span class="order-date ms-3">March 2, 2025</span>
+                        </div>
+                        <span class="order-status shipped">Shipped</span>
+                    </div>
+                    <div class="order-items">
+                        <img
+                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="order-item-img"
+                        />
+                        <img
+                        src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="order-item-img"
+                        />
+                    </div>
+                    <div
+                        class="d-flex justify-content-between align-items-center"
+                    >
+                        <span class="order-price">$1,130</span>
+                        <a href="#" class="btn btn-sm btn-outline-primary"
+                        >Track Order</a
+                        >
+                    </div>
+                    </div>
+
+                    <div class="order-card p-3 border rounded">
+                    <div class="order-header">
+                        <div>
+                        <span class="order-id">#37891</span>
+                        <span class="order-date ms-3">February 15, 2025</span>
+                        </div>
+                        <span class="order-status delivered">Delivered</span>
+                    </div>
+                    <div class="order-items">
+                        <img
+                        src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="order-item-img"
+                        />
+                    </div>
+                    <div
+                        class="d-flex justify-content-between align-items-center"
+                    >
+                        <span class="order-price">$750</span>
+                        <a href="#" class="btn btn-sm btn-outline-primary"
+                        >View Details</a
+                        >
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                <div
+                    class="card-header d-flex justify-content-between align-items-center"
+                >
+                    <h5>Recently Viewed</h5>
+                    <a href="#" class="btn btn-sm btn-link">View All</a>
+                </div>
+                <div class="card-body p-3">
+                    <div class="d-flex mb-3 pb-3 border-bottom">
+                    <img
+                        src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="me-3"
+                        style="
+                        width: 60px;
+                        height: 80px;
+                        object-fit: cover;
+                        border-radius: 4px;
+                        "
+                    />
+                    <div>
+                        <h6 class="mb-1">Abstract Harmony</h6>
+                        <p class="text-muted small mb-1">Sophia Lee</p>
+                        <span class="fw-bold">$520</span>
+                    </div>
+                    </div>
+                    <div class="d-flex mb-3 pb-3 border-bottom">
+                    <img
+                        src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="me-3"
+                        style="
+                        width: 60px;
+                        height: 80px;
+                        object-fit: cover;
+                        border-radius: 4px;
+                        "
+                    />
+                    <div>
+                        <h6 class="mb-1">Golden Horizon</h6>
+                        <p class="text-muted small mb-1">Marcus Rivera</p>
+                        <span class="fw-bold">$750</span>
+                    </div>
+                    </div>
+                    <div class="d-flex">
+                    <img
+                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="me-3"
+                        style="
+                        width: 60px;
+                        height: 80px;
+                        object-fit: cover;
+                        border-radius: 4px;
+                        "
+                    />
+                    <div>
+                        <h6 class="mb-1">Seaside Dreams</h6>
+                        <p class="text-muted small mb-1">Emma Parker</p>
+                        <span class="fw-bold">$450</span>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <div class="card">
+            <div class="card-header">
+                <h5>Recommended For You</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100">
+                    <img
+                        src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        class="card-img-top"
+                        alt="Artwork"
+                    />
+                    <div class="card-body">
+                        <h5 class="card-title">Summer Dreams</h5>
+                        <p class="text-muted small">Maria Jones</p>
+                        <p class="fw-bold text-secondary">$380</p>
+                        <button class="btn btn-sm btn-outline-primary">
+                        View Details
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100">
+                    <img
+                        src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        class="card-img-top"
+                        alt="Artwork"
+                    />
+                    <div class="card-body">
+                        <h5 class="card-title">Vibrant Motion</h5>
+                        <p class="text-muted small">Thomas Wu</p>
+                        <p class="fw-bold text-secondary">$540</p>
+                        <button class="btn btn-sm btn-outline-primary">
+                        View Details
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100">
+                    <img
+                        src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        class="card-img-top"
+                        alt="Artwork"
+                    />
+                    <div class="card-body">
+                        <h5 class="card-title">Digital Frontiers</h5>
+                        <p class="text-muted small">Alexis Chen</p>
+                        <p class="fw-bold text-secondary">$420</p>
+                        <button class="btn btn-sm btn-outline-primary">
+                        View Details
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100">
+                    <img
+                        src="https://images.unsplash.com/photo-1577720580479-7d839d829c73?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        class="card-img-top"
+                        alt="Artwork"
+                    />
+                    <div class="card-body">
+                        <h5 class="card-title">Eternal Light</h5>
+                        <p class="text-muted small">Sarah Miller</p>
+                        <p class="fw-bold text-secondary">$695</p>
+                        <button class="btn btn-sm btn-outline-primary">
+                        View Details
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div class="tab-pane fade" id="profile">
+            <div class="dashboard-header">
+            <h2>My Profile</h2>
+            </div>
+
+            <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                <div class="card-body text-center">
+                    <div class="avatar-upload mx-auto">
+                    <div class="profile-avatar mx-auto">JD</div>
+                    <div class="avatar-edit">
+                        <input
+                        type="file"
+                        id="imageUpload"
+                        accept=".png, .jpg, .jpeg"
+                        />
+                        <label for="imageUpload"
+                        ><i class="fas fa-camera"></i
+                        ></label>
+                    </div>
+                    </div>
+                    <h4 class="mb-1">John Doe</h4>
+                    <p class="text-muted mb-3">Art Enthusiast</p>
+                    <div class="d-grid">
+                    <button class="btn btn-outline-primary mb-2">
+                        Edit Profile
+                    </button>
+                    </div>
+                </div>
+                </div>
+
+                <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Member Since:</strong> January 15, 2025</p>
+                    <p><strong>Orders Completed:</strong> 5</p>
+                    <p><strong>Preferences:</strong> Paintings, Photography</p>
+                    <p><strong>Newsletter:</strong> Subscribed</p>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                        <label for="firstName" class="form-label"
+                            >First Name</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="firstName"
+                            value="John"
+                        />
+                        </div>
+                        <div class="col-md-6">
+                        <label for="lastName" class="form-label"
+                            >Last Name</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="lastName"
+                            value="Doe"
+                        />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label"
+                        >Email Address</label
+                        >
+                        <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        value="john.doe@example.com"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label"
+                        >Phone Number</label
+                        >
+                        <input
+                        type="tel"
+                        class="form-control"
+                        id="phone"
+                        value="(555) 123-4567"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="bio" rows="3">
+    Art enthusiast with a passion for contemporary paintings and photography. I enjoy collecting pieces that tell a story and create conversation.</textarea
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+                    </form>
+                </div>
+                </div>
+
+                <div class="card">
+                <div class="card-header">
+                    <h5>Address Information</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                    <div class="mb-3">
+                        <label for="address" class="form-label"
+                        >Street Address</label
+                        >
+                        <input
+                        type="text"
+                        class="form-control"
+                        id="address"
+                        value="123 Art Street"
+                        />
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                        <label for="city" class="form-label">City</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="city"
+                            value="New York"
+                        />
+                        </div>
+                        <div class="col-md-3">
+                        <label for="state" class="form-label">State</label>
+                        <select class="form-select" id="state">
+                            <option value="NY" selected>NY</option>
+                            <option value="CA">CA</option>
+                            <option value="TX">TX</option>
+                            <option value="FL">FL</option>
+                        </select>
+                        </div>
+                        <div class="col-md-3">
+                        <label for="zip" class="form-label">Zip Code</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="zip"
+                            value="10001"
+                        />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <select class="form-select" id="country">
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="AU">Australia</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Cart Tab -->
+        <div class="tab-pane fade" id="cart">
+            <div class="dashboard-header">
+            <h2>Shopping Cart</h2>
+            <div>
+                <span class="badge bg-primary rounded-pill">2 Items</span>
+            </div>
+            </div>
+
+            <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                <div class="card-body">
+                    <!-- Cart Item 1 -->
+                    <div class="cart-item">
+                    <img
+                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="cart-item-img"
+                    />
+                    <div class="cart-item-info">
+                        <h5 class="cart-item-title">Seaside Dreams</h5>
+                        <p class="cart-item-artist">Emma Parker</p>
+                        <p class="cart-item-price">$450</p>
+                        <div class="cart-item-actions">
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                        </button>
+                        <button class="btn btn-sm btn-link text-primary ms-2">
+                            <i class="fas fa-heart me-1"></i> Save for later
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Cart Item 2 -->
+                    <div class="cart-item">
+                    <img
+                        src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="cart-item-img"
+                    />
+                    <div class="cart-item-info">
+                        <h5 class="cart-item-title">Urban Reflections</h5>
+                        <p class="cart-item-artist">David Chen</p>
+                        <p class="cart-item-price">$680</p>
+                        <div class="cart-item-actions">
+                        <button class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                        </button>
+                        <button class="btn btn-sm btn-link text-primary ms-2">
+                            <i class="fas fa-heart me-1"></i> Save for later
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="card">
+                <div class="card-header">
+                    <h5>Saved For Later</h5>
+                </div>
+                <div class="card-body">
+                    <div class="cart-item">
+                    <img
+                        src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                        alt="Artwork"
+                        class="cart-item-img"
+                    />
+                    <div class="cart-item-info">
+                        <h5 class="cart-item-title">Abstract Harmony</h5>
+                        <p class="cart-item-artist">Sophia Lee</p>
+                        <p class="cart-item-price">$520</p>
+                        <div class="cart-item-actions">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="fas fa-shopping-cart me-1"></i> Move to
+                            Cart
+                        </button>
+                        <button class="btn btn-sm btn-link text-danger ms-2">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                        </button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="cart-summary">
+                    <div class="cart-summary-item">
+                        <span>Subtotal (2 items)</span>
+                        <span>$1,130.00</span>
+                    </div>
+                    <div class="cart-summary-item">
+                        <span>Shipping</span>
+                        <span>$35.00</span>
+                    </div>
+                    <div class="cart-summary-item">
+                        <span>Tax</span>
+                        <span>$90.40</span>
+                    </div>
+                    <div class="cart-summary-item total">
+                        <span>Total</span>
+                        <span>$1,255.40</span>
+                    </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-primary">
+                        Proceed to Checkout
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        Continue Shopping
+                    </button>
+                    </div>
+                </div>
+                </div>
+
+                <div class="card">
+                <div class="card-header">
+                    <h5>Apply Coupon</h5>
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Coupon code"
+                    />
+                    <button class="btn btn-primary" type="button">
+                        Apply
+                    </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Order History Tab -->
+        <div class="tab-pane fade" id="orders">
+            <div class="dashboard-header">
+            <h2>Order History</h2>
+            </div>
+
+            <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">All Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Processing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Shipped</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Delivered</a>
+            </li>
+            </ul>
+
+            <div class="card mb-4">
+            <div class="card-body">
+                <div class="order-card p-3 mb-4 border rounded">
+                <div class="order-header">
+                    <div>
+                    <span class="order-id">#38293</span>
+                    <span class="order-date ms-3">March 2, 2025</span>
+                    </div>
+                    <span class="order-status shipped">Shipped</span>
+                </div>
+                <div class="order-items">
+                    <img
+                    src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                    <img
+                    src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                </div>
+                <div
+                    class="d-flex justify-content-between align-items-center"
+                >
+                    <span class="order-price">$1,130</span>
+                    <div>
+                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
+                        >Track Order</a
+                    >
+                    <a href="#" class="btn btn-sm btn-primary"
+                        >Order Details</a
+                    >
+                    </div>
+                </div>
+                </div>
+
+                <div class="order-card p-3 mb-4 border rounded">
+                <div class="order-header">
+                    <div>
+                    <span class="order-id">#37891</span>
+                    <span class="order-date ms-3">February 15, 2025</span>
+                    </div>
+                    <span class="order-status delivered">Delivered</span>
+                </div>
+                <div class="order-items">
+                    <img
+                    src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                </div>
+                <div
+                    class="d-flex justify-content-between align-items-center"
+                >
+                    <span class="order-price">$750</span>
+                    <div>
+                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
+                        >Write Review</a
+                    >
+                    <a href="#" class="btn btn-sm btn-primary"
+                        >Order Details</a
+                    >
+                    </div>
+                </div>
+                </div>
+
+                <div class="order-card p-3 mb-4 border rounded">
+                <div class="order-header">
+                    <div>
+                    <span class="order-id">#37554</span>
+                    <span class="order-date ms-3">January 28, 2025</span>
+                    </div>
+                    <span class="order-status delivered">Delivered</span>
+                </div>
+                <div class="order-items">
+                    <img
+                    src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                </div>
+                <div
+                    class="d-flex justify-content-between align-items-center"
+                >
+                    <span class="order-price">$520</span>
+                    <div>
+                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
+                        >Write Review</a
+                    >
+                    <a href="#" class="btn btn-sm btn-primary"
+                        >Order Details</a
+                    >
+                    </div>
+                </div>
+                </div>
+
+                <div class="order-card p-3 border rounded">
+                <div class="order-header">
+                    <div>
+                    <span class="order-id">#36921</span>
+                    <span class="order-date ms-3">December 10, 2024</span>
+                    </div>
+                    <span class="order-status delivered">Delivered</span>
+                </div>
+                <div class="order-items">
+                    <img
+                    src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                    <img
+                    src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                    alt="Artwork"
+                    class="order-item-img"
+                    />
+                </div>
+                <div
+                    class="d-flex justify-content-between align-items-center"
+                >
+                    <span class="order-price">$920</span>
+                    <div>
+                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
+                        >Write Review</a
+                    >
+                    <a href="#" class="btn btn-sm btn-primary"
+                        >Order Details</a
+                    >
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                <a
+                    class="page-link"
+                    href="#"
+                    tabindex="-1"
+                    aria-disabled="true"
+                    >Previous</a
+                >
+                </li>
+                <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+            </nav>
+        </div>
+
+        <!-- Bookmarks Tab -->
+        <div class="tab-pane fade" id="bookmarks">
+            <div class="dashboard-header">
+            <h2>My Bookmarks</h2>
+            <div>
+                <span class="badge bg-secondary rounded-pill">5 Items</span>
+            </div>
+            </div>
+
+            <div class="bookmark-grid">
+            <!-- Bookmark 1 -->
+            <div class="bookmark-card card">
+                <div class="bookmark-actions">
+                <button
+                    class="btn btn-sm text-danger"
+                    title="Remove from bookmarks"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+                </div>
+                <img
+                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+                />
+                <div class="card-body">
+                <h5 class="card-title">Summer Dreams</h5>
+                <p class="artist-name">Maria Jones</p>
+                <p class="price">$380</p>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-primary mb-2">
+                    Add to Cart
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                    View Details
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            <!-- Bookmark 2 -->
+            <div class="bookmark-card card">
+                <div class="bookmark-actions">
+                <button
+                    class="btn btn-sm text-danger"
+                    title="Remove from bookmarks"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+                </div>
+                <img
+                src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+                />
+                <div class="card-body">
+                <h5 class="card-title">Vibrant Motion</h5>
+                <p class="artist-name">Thomas Wu</p>
+                <p class="price">$540</p>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-primary mb-2">
+                    Add to Cart
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                    View Details
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            <!-- Bookmark 3 -->
+            <div class="bookmark-card card">
+                <div class="bookmark-actions">
+                <button
+                    class="btn btn-sm text-danger"
+                    title="Remove from bookmarks"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+                </div>
+                <img
+                src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+                />
+                <div class="card-body">
+                <h5 class="card-title">Digital Frontiers</h5>
+                <p class="artist-name">Alexis Chen</p>
+                <p class="price">$420</p>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-primary mb-2">
+                    Add to Cart
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                    View Details
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            <!-- Bookmark 4 -->
+            <div class="bookmark-card card">
+                <div class="bookmark-actions">
+                <button
+                    class="btn btn-sm text-danger"
+                    title="Remove from bookmarks"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+                </div>
+                <img
+                src="https://images.unsplash.com/photo-1577720580479-7d839d829c73?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+                />
+                <div class="card-body">
+                <h5 class="card-title">Eternal Light</h5>
+                <p class="artist-name">Sarah Miller</p>
+                <p class="price">$695</p>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-primary mb-2">
+                    Add to Cart
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                    View Details
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            <!-- Bookmark 5 -->
+            <div class="bookmark-card card">
+                <div class="bookmark-actions">
+                <button
+                    class="btn btn-sm text-danger"
+                    title="Remove from bookmarks"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+                </div>
+                <img
+                src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+                />
+                <div class="card-body">
+                <h5 class="card-title">Golden Horizon</h5>
+                <p class="artist-name">Marcus Rivera</p>
+                <p class="price">$750</p>
+                <div class="d-grid">
+                    <button class="btn btn-sm btn-primary mb-2">
+                    Add to Cart
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary">
+                    View Details
+                    </button>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+        <!-- Other tabs (Commissions, Settings) would go here -->
+        </div>
+    </main>
+    </div>
+
+    <!-- Mobile sidebar toggle button -->
+    <div class="sidebar-toggle">
+    <i class="fas fa-bars"></i>
+    </div>
+{% endblock %}
+{% block footer %}{% endblock footer %}
+{% block extra_js %}
+    <script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}

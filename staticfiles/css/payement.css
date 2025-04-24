@@ -1,0 +1,524 @@
+/* Design System CSS (same as previous pages) */
+:root {
+  /* Palette néon */
+  --neon-cyan: #00ffff;
+  --neon-pink: #ff00ff;
+  
+  /* Arrière-plans sombres */
+  --dark-bg: #0a0a0a;
+  --dark-accent: #1a1a1a;
+  
+  /* Typographie */
+  --font-sans: "Open Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Tailles de police - système cohérent */
+  --fs-xs: 0.75rem;    /* 12px */
+  --fs-sm: 0.875rem;   /* 14px */
+  --fs-base: 1rem;     /* 16px */
+  --fs-md: 1.125rem;   /* 18px */
+  --fs-lg: 1.25rem;    /* 20px */
+  --fs-xl: 1.5rem;     /* 24px */
+  --fs-2xl: 1.75rem;   /* 28px */
+  --fs-3xl: 2.25rem;   /* 36px */
+  --fs-4xl: 3rem;      /* 48px */
+
+  /* Palette de gris */
+  --white: #ffffff;
+  --off-white: #f8f9fa;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-400: #ced4da;
+  --gray-500: #adb5bd;
+  --gray-600: #6c757d;
+  --gray-700: #495057;
+  --gray-800: #343a40;
+  --gray-900: #212529;
+  --black: #000000;
+
+  /* Couleurs de marque */
+  --primary: #4f6e87;    /* Bleu tempéré */
+  --secondary: #a67c52;  /* Or/bronze chaud */
+  --accent: #d3b88c;     /* Or clair */
+  --dark: #2b3a42;       /* Bleu-gris foncé */
+
+  /* Espacements */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 3rem;
+  --space-6: 4.5rem;
+
+  /* Rayons de bordure */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+}
+
+/* Core Styles */
+body {
+  background-color: var(--dark-bg);
+  color: #fff;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+  color: var(--white);
+}
+
+/* Navbar Styles */
+.navbar {
+  padding: var(--space-3) 0;
+  background-color: var(--dark-accent) !important;
+  border-bottom: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.navbar-brand {
+  font-family: var(--font-serif);
+  font-size: var(--fs-xl);
+  color: var(--neon-cyan) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.navbar-nav .nav-link {
+  padding: var(--space-2) var(--space-3);
+  font-weight: 500;
+  color: #fff !important;
+  transition: color 0.2s ease;
+}
+
+/* Page Header */
+.page-header {
+  background-color: var(--dark-accent);
+  padding: var(--space-4) 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  background-color: transparent;
+}
+
+.breadcrumb-item a {
+  color: var(--gray-400);
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+.breadcrumb-item.active {
+  color: var(--neon-cyan);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  color: var(--gray-600);
+}
+
+/* Checkout Process Steps */
+.checkout-steps {
+  display: flex;
+  margin-bottom: var(--space-5);
+  position: relative;
+  justify-content: space-between;
+}
+
+.checkout-steps::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--gray-700);
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 var(--space-2);
+  background-color: var(--dark-bg);
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  margin: 0 auto var(--space-2);
+  background-color: var(--gray-800);
+  color: var(--gray-400);
+  border: 1px solid var(--gray-700);
+}
+
+.step.active .step-number {
+  background-color: var(--neon-cyan);
+  color: var(--black);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+  border: none;
+}
+
+.step.completed .step-number {
+  background-color: rgba(0, 255, 255, 0.2);
+  color: var(--neon-cyan);
+  border: 1px solid var(--neon-cyan);
+}
+
+.step-title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+
+.step.active .step-title {
+  color: var(--neon-cyan);
+}
+
+.step.completed .step-title {
+  color: var(--gray-300);
+}
+
+/* Checkout Cards */
+.checkout-card {
+  background-color: var(--dark-accent);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.checkout-card h3 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+  color: var(--neon-cyan);
+}
+
+/* Order Summary */
+.order-item {
+  display: flex;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--gray-800);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-image {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-right: var(--space-3);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.order-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.order-item-details {
+  flex: 1;
+}
+
+.order-item-title {
+  font-family: var(--font-serif);
+  font-size: var(--fs-md);
+  margin-bottom: var(--space-1);
+  color: var(--white);
+}
+
+.order-item-artist {
+  font-size: var(--fs-sm);
+  color: var(--gray-400);
+  margin-bottom: var(--space-1);
+}
+
+.order-item-price {
+  font-weight: 600;
+  margin-left: auto;
+  text-align: right;
+  color: var(--neon-cyan);
+}
+
+.order-summary-totals {
+  margin-top: var(--space-3);
+}
+
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.order-row.total {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 2px solid var(--gray-700);
+  color: var(--neon-cyan);
+}
+
+/* Form Styling */
+.form-control {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-700);
+  background-color: var(--dark-bg);
+  color: var(--white);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: var(--fs-base);
+}
+
+.form-control:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.25);
+  outline: none;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+  color: var(--gray-300);
+}
+
+.form-check-label {
+  font-weight: 400;
+  color: var(--gray-300);
+}
+
+/* Payment Methods */
+.payment-methods .form-check {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--gray-700);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  background-color: var(--dark-bg);
+}
+
+.payment-methods .form-check:hover {
+  background-color: rgba(0, 255, 255, 0.05);
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.payment-methods .form-check-input:checked ~ .form-check-label {
+  font-weight: 600;
+  color: var(--neon-cyan);
+}
+
+.payment-methods .form-check.active {
+  border-color: var(--neon-cyan);
+  background-color: rgba(0, 255, 255, 0.1);
+}
+
+.payment-icon {
+  margin-right: var(--space-2);
+  font-size: 1.2em;
+  vertical-align: middle;
+  color: var(--neon-cyan);
+}
+
+/* Credit Card Form */
+.card-number-input {
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+.expiry-cvv-group {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.expiry-cvv-group .form-group {
+  flex: 1;
+}
+
+/* Secure Badge */
+.secure-badge {
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-sm);
+  color: var(--gray-400);
+  margin-top: var(--space-4);
+}
+
+.secure-badge i {
+  color: var(--neon-cyan);
+  margin-right: var(--space-1);
+  font-size: 1.2em;
+}
+
+/* Button Styles */
+.btn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--neon-cyan), #0af);
+  border: none;
+  color: #000;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+.btn-secondary:hover {
+  background-color: #8d6a47;
+  border-color: #8d6a47;
+  box-shadow: 0 0 15px rgba(166, 124, 82, 0.3);
+}
+
+.btn-outline-primary {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+  background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--neon-cyan);
+  color: var(--dark-bg);
+}
+
+.btn-lg {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--fs-md);
+}
+
+/* Footer */
+footer {
+  background-color: var(--gray-900);
+  color: var(--gray-300);
+  padding-top: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+footer h5 {
+  color: var(--neon-cyan);
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-md);
+}
+
+footer ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: var(--space-4);
+}
+
+footer ul li {
+  margin-bottom: var(--space-2);
+}
+
+footer a {
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+.footer-bottom {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--neon-cyan);
+  margin-top: var(--space-4);
+}
+
+.footer-bottom p {
+  margin-bottom: 0;
+  font-size: var(--fs-sm);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+  .checkout-steps {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .checkout-steps::before {
+    display: none;
+  }
+
+  .step {
+    flex: 0 0 auto;
+    width: calc(33.333% - var(--space-3));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .step {
+    width: calc(50% - var(--space-3));
+  }
+
+  .expiry-cvv-group {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .step {
+    width: 100%;
+  }
+
+  .order-item {
+    flex-direction: column;
+  }
+
+  .order-item-image {
+    margin-bottom: var(--space-2);
+  }
+}

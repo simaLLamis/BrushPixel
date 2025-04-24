@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Seaside Dreams by Emma Parker | Brush & Pixel{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/artwork-detail.css" %}">
+{% endblock %}
+
+{% block content %}
+    <!-- Page Header with Breadcrumbs -->
+    <section class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'gallery' %}">Gallery</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+            Seaside Dreams
+            </li>
+        </ol>
+        </nav>
+    </div>
+    </section>
+
+    <!-- Artwork Details -->
+    <section class="py-5">
+    <div class="container">
+        <div class="row">
+        <!-- Artwork Image -->
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="artwork-image">
+            <img
+                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                alt="Seaside Dreams Artwork"
+                id="mainImage"
+            />
+            </div>
+            <div class="thumbnails">
+            <div
+                class="thumbnail active"
+                onclick="changeImage('https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')"
+            >
+                <img
+                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                alt="Thumbnail 1"
+                />
+            </div>
+            <div
+                class="thumbnail"
+                onclick="changeImage('https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=10')"
+            >
+                <img
+                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=10"
+                alt="Thumbnail 2"
+                />
+            </div>
+            <div
+                class="thumbnail"
+                onclick="changeImage('https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=20')"
+            >
+                <img
+                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=20"
+                alt="Thumbnail 3"
+                />
+            </div>
+            <div
+                class="thumbnail"
+                onclick="changeImage('https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=30')"
+            >
+                <img
+                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80&x=30"
+                alt="Thumbnail 4"
+                />
+            </div>
+            </div>
+        </div>
+
+        <!-- Artwork Details -->
+        <div class="col-lg-6">
+            <div class="artwork-details">
+            <span class="badge bg-accent mb-2">New</span>
+            <h1>Seaside Dreams</h1>
+            <p class="artist-name">By Emma Parker</p>
+            <p class="artwork-price">$450.00</p>
+
+            <div class="artwork-availability mb-4">
+                <p class="mb-1">
+                <i class="fas fa-check-circle me-2" style="color: green"></i>
+                In stock - Ready to ship
+                </p>
+                <p class="mb-0 text-sm">
+                <i class="fas fa-shipping-fast me-2"></i> Free shipping to US,
+                EU, and Canada
+                </p>
+            </div>
+
+            <div class="artwork-description mb-4">
+                <p>
+                A tranquil seascape capturing the serene beauty of coastal
+                life. The gentle waves lap against the shore as the sun casts
+                a golden glow across the horizon. Emma Parker's masterful
+                brushwork brings to life the peaceful atmosphere of a perfect
+                day by the sea.
+                </p>
+                <p>
+                This original painting would make a stunning addition to any
+                room seeking to evoke a sense of calm and natural beauty.
+                </p>
+            </div>
+
+            <div class="cta-buttons mb-4">
+                <a href="{% url "checkout" 1 %}" class="btn btn-primary">
+                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                </a>
+                <a href="{% url "checkout" 1 %}" class="btn btn-secondary"> Buy Now </a>
+                <button class="btn btn-outline-primary">
+                <i class="far fa-heart"></i> Add to Wishlist
+                </button>
+            </div>
+
+            <div class="specs-section">
+                <h3>Specifications</h3>
+                <ul class="specs-list">
+                <li>
+                    <span class="specs-label">Medium</span>
+                    <span>Oil on Canvas</span>
+                </li>
+                <li>
+                    <span class="specs-label">Dimensions</span>
+                    <span>24" × 36" (61cm × 91cm)</span>
+                </li>
+                <li>
+                    <span class="specs-label">Year</span>
+                    <span>2024</span>
+                </li>
+                <li>
+                    <span class="specs-label">Style</span>
+                    <span>Impressionist</span>
+                </li>
+                <li>
+                    <span class="specs-label">Framing</span>
+                    <span>Unframed</span>
+                </li>
+                <li>
+                    <span class="specs-label">Certificate</span>
+                    <span>Includes Certificate of Authenticity</span>
+                </li>
+                </ul>
+            </div>
+
+            <!-- Artist info -->
+            <div class="artist-card d-flex align-items-start">
+                <img
+                src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80"
+                alt="Emma Parker"
+                class="artist-img"
+                />
+                <div>
+                <h4 class="mb-1">Emma Parker</h4>
+                <p class="mb-2">
+                    Contemporary impressionist artist based in San Francisco,
+                    known for her evocative seascapes and coastal scenes.
+                </p>
+                <a href="#" class="btn btn-link">View artist profile</a>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- Additional Information Tabs -->
+    <section class="py-4">
+    <div class="container">
+        <ul class="nav nav-tabs" id="artwork-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button
+            class="nav-link active"
+            id="details-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#details"
+            type="button"
+            role="tab"
+            aria-controls="details"
+            aria-selected="true"
+            >
+            Details
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+            class="nav-link"
+            id="shipping-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#shipping"
+            type="button"
+            role="tab"
+            aria-controls="shipping"
+            aria-selected="false"
+            >
+            Shipping & Returns
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+            class="nav-link"
+            id="reviews-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#reviews"
+            type="button"
+            role="tab"
+            aria-controls="reviews"
+            aria-selected="false"
+            >
+            Reviews
+            </button>
+        </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+        <div
+            class="tab-pane fade show active"
+            id="details"
+            role="tabpanel"
+            aria-labelledby="details-tab"
+        >
+            <div class="py-4">
+            <h3>About the Artwork</h3>
+            <p>
+                "Seaside Dreams" was inspired by the artist's childhood summers
+                spent on the coast of Maine. The painting captures not just the
+                visual beauty of the ocean, but the feelings of peace and
+                nostalgia that come with seaside memories.
+            </p>
+            <p>
+                Parker uses a technique of layered oil paints to create depth
+                and movement in the water, while the subtle color palette of
+                blues, greens, and golden hues evokes the particular quality of
+                light found near the ocean during the golden hour.
+            </p>
+            <p>
+                The horizon line, positioned using the golden ratio, draws the
+                viewer's eye across the canvas and creates a sense of
+                expansiveness that is both calming and uplifting.
+            </p>
+
+            <h4 class="mt-4">Caring for Your Artwork</h4>
+            <ul>
+                <li>Keep away from direct sunlight to prevent fading</li>
+                <li>
+                Maintain a consistent room temperature and humidity level
+                </li>
+                <li>Dust gently with a soft, dry cloth when needed</li>
+                <li>
+                For professional cleaning or restoration, consult an art
+                specialist
+                </li>
+            </ul>
+            </div>
+        </div>
+        <div
+            class="tab-pane fade"
+            id="shipping"
+            role="tabpanel"
+            aria-labelledby="shipping-tab"
+        >
+            <div class="py-4">
+            <h3>Shipping Information</h3>
+            <p>
+                All artwork is carefully packaged to ensure safe delivery to
+                your door. We use museum-quality packaging materials including
+                acid-free tissue, corner protectors, and custom-sized boxes with
+                foam inserts.
+            </p>
+
+            <h4 class="mt-4">Shipping Timelines</h4>
+            <ul>
+                <li>United States: 3-5 business days</li>
+                <li>Canada & Europe: 5-10 business days</li>
+                <li>Rest of World: 10-15 business days</li>
+            </ul>
+
+            <p>
+                Expedited shipping options are available at checkout for an
+                additional fee.
+            </p>
+
+            <h4 class="mt-4">Our Return Policy</h4>
+            <p>
+                We want you to be completely satisfied with your purchase. If
+                for any reason you're not happy with your artwork, you may
+                return it within 14 days of delivery for a full refund of the
+                purchase price.
+            </p>
+
+            <p>
+                To initiate a return, please contact our customer service team
+                to receive a return authorization and shipping instructions. The
+                artwork must be returned in its original packaging and
+                condition.
+            </p>
+
+            <p>
+                Please note that shipping fees are non-refundable, and the buyer
+                is responsible for return shipping costs unless the return is
+                due to damage during transit or an error on our part.
+            </p>
+            </div>
+        </div>
+        <div
+            class="tab-pane fade"
+            id="reviews"
+            role="tabpanel"
+            aria-labelledby="reviews-tab"
+        >
+            <div class="py-4">
+            <div
+                class="d-flex justify-content-between align-items-center mb-4"
+            >
+                <h3 class="mb-0">Customer Reviews</h3>
+                <div>
+                <span class="me-2">4.8 out of 5</span>
+                <span class="text-warning">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </span>
+                </div>
+            </div>
+
+            <!-- Review 1 -->
+            <div class="card mb-3">
+                <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <h5 class="card-title mb-0">Absolutely stunning</h5>
+                    <span class="text-warning">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    </span>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    By Michael T. on Feb 12, 2025
+                </h6>
+                <p class="card-text">
+                    This piece exceeded my expectations. The colors are even
+                    more vibrant in person, and it's become the focal point of
+                    my living room. The packaging was excellent too - arrived in
+                    perfect condition.
+                </p>
+                </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="card mb-3">
+                <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <h5 class="card-title mb-0">
+                    Beautiful artwork, excellent service
+                    </h5>
+                    <span class="text-warning">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    </span>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    By Sarah K. on Jan 30, 2025
+                </h6>
+                <p class="card-text">
+                    I've been looking for the perfect piece for my
+                    coastal-themed home office, and this is it! The brushwork is
+                    exquisite, and the sense of calm it brings to the room is
+                    exactly what I was hoping for. Shipping was fast and the
+                    team was very responsive to my questions.
+                </p>
+                </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <h5 class="card-title mb-0">
+                    Good, but smaller than expected
+                    </h5>
+                    <span class="text-warning">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                    </span>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    By David R. on Jan 15, 2025
+                </h6>
+                <p class="card-text">
+                    The artwork itself is beautiful and well-executed. My only
+                    issue is that I misjudged the size despite the dimensions
+                    being clearly listed. Make sure you measure your space
+                    before ordering. Otherwise, very happy with the purchase.
+                </p>
+                </div>
+            </div>
+
+            <!-- Write a Review Form -->
+            <div class="card">
+                <div class="card-body">
+                <h4>Write a Review</h4>
+                <form>
+                    <div class="mb-3">
+                    <label for="reviewName" class="form-label"
+                        >Your Name</label
+                    >
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="reviewName"
+                        required
+                    />
+                    </div>
+                    <div class="mb-3">
+                    <label for="reviewEmail" class="form-label"
+                        >Email Address</label
+                    >
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="reviewEmail"
+                        required
+                    />
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <div>
+                        <div class="rating">
+                        <input
+                            type="radio"
+                            id="star5"
+                            name="rating"
+                            value="5"
+                            required
+                        />
+                        <label for="star5" title="5 stars"></label>
+                        <input
+                            type="radio"
+                            id="star4"
+                            name="rating"
+                            value="4"
+                        />
+                        <label for="star4" title="4 stars"></label>
+                        <input
+                            type="radio"
+                            id="star3"
+                            name="rating"
+                            value="3"
+                        />
+                        <label for="star3" title="3 stars"></label>
+                        <input
+                            type="radio"
+                            id="star2"
+                            name="rating"
+                            value="2"
+                        />
+                        <label for="star2" title="2 stars"></label>
+                        <input
+                            type="radio"
+                            id="star1"
+                            name="rating"
+                            value="1"
+                        />
+                        <label for="star1" title="1 star"></label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="mb-3">
+                    <label for="reviewText" class="form-label"
+                        >Your Review</label
+                    >
+                    <textarea
+                        class="form-control"
+                        id="reviewText"
+                        rows="4"
+                        required
+                    ></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                    Submit Review
+                    </button>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- Related Artwork -->
+    <section class="py-5">
+    <div class="container">
+        <h2 class="related-title">Related Artwork</h2>
+        <div class="related-artwork">
+        <!-- Related Artwork 1 -->
+        <div class="artwork-card">
+            <a href="{% url "artwork_detail" 1 %}">
+            <img
+                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+            />
+            </a>
+            <div class="card-body">
+            <h4 class="card-title">Ocean Memories</h4>
+            <p class="artist-name">Emma Parker</p>
+            <p class="price">$520</p>
+            <a href="{% url "artwork_detail" 1 %}" class="btn btn-link">View details</a>
+            </div>
+        </div>
+
+        <!-- Related Artwork 2 -->
+        <div class="artwork-card">
+            <a href="{% url "artwork_detail" 1 %}">
+            <img src="{% static 'img/placeholder.jpg' %}" class="card-img-top" alt="Artwork" />
+            </a>
+            <div class="card-body">
+            <h4 class="card-title">Tropical Whisper</h4>
+            <p class="artist-name">Olivia Garcia</p>
+            <p class="price">$620</p>
+            <a href="{% url "artwork_detail" 1 %}" class="btn btn-link">View details</a>
+            </div>
+        </div>
+
+        <!-- Related Artwork 3 -->
+        <div class="artwork-card">
+            <a href="{% url "artwork_detail" 1 %}">
+            <img
+                src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+            />
+            </a>
+            <div class="card-body">
+            <h4 class="card-title">Golden Horizon</h4>
+            <p class="artist-name">Marcus Rivera</p>
+            <p class="price">$750</p>
+            <a href="{% url "artwork_detail" 1 %}" class="btn btn-link">View details</a>
+            </div>
+        </div>
+
+        <!-- Related Artwork 4 -->
+        <div class="artwork-card">
+            <a href="{% url "artwork_detail" 1 %}">
+            <img
+                src="https://images.unsplash.com/photo-1554188248-986adbb73be4?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+                class="card-img-top"
+                alt="Artwork"
+            />
+            </a>
+            <div class="card-body">
+            <h4 class="card-title">Eternal Summer</h4>
+            <p class="artist-name">Thomas Wright</p>
+            <p class="price">$490</p>
+            <a href="{% url "artwork_detail" 1 %}" class="btn btn-link">View details</a>
+            </div>
+        </div>
+        </div>
+    </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function changeImage(imageUrl) {
+    const mainImage = document.getElementById('mainImage');
+    mainImage.src = imageUrl;
+    
+    // Update active thumbnail
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    thumbnails.forEach(thumb => {
+      if (thumb.querySelector('img').src === imageUrl) {
+        thumb.classList.add('active');
+      } else {
+        thumb.classList.remove('active');
+      }
+    });
+  }
+</script>
+{% endblock %}

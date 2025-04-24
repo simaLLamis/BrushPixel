@@ -1,0 +1,320 @@
+/* Base Design System CSS from landing page (abbreviated for brevity) */
+:root {
+  --bs-font-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  --bs-font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --neon-cyan: #00ffff;
+  --neon-pink: #ff00ff;
+
+  --dark-bg: #0a0a0a;
+  --dark-accent: #1a1a1a;
+
+  /* Font sizes */
+  --fs-xs: 0.75rem; /* 12px */
+  --fs-sm: 0.875rem; /* 14px */
+  --fs-base: 1rem; /* 16px */
+  --fs-md: 1.125rem; /* 18px */
+  --fs-lg: 1.25rem; /* 20px */
+  --fs-xl: 1.5rem; /* 24px */
+  --fs-2xl: 1.75rem; /* 28px */
+  --fs-3xl: 2.25rem; /* 36px */
+  --fs-4xl: 3rem; /* 48px */
+
+  /* Color palette */
+  --bp-white: #ffffff;
+  --bp-off-white: #f8f9fa;
+  --bp-light-gray: #e9ecef;
+  --bp-gray-100: #f8f9fa;
+  --bp-gray-200: #e9ecef;
+  --bp-gray-300: #dee2e6;
+  --bp-gray-400: #ced4da;
+  --bp-gray-500: #adb5bd;
+  --bp-gray-600: #6c757d;
+  --bp-gray-700: #495057;
+  --bp-gray-800: #343a40;
+  --bp-gray-900: #212529;
+  --bp-black: #000000;
+
+  /* Brand colors */
+  --bp-primary: #4f6e87; /* Muted blue */
+  --bp-secondary: #a67c52; /* Warm gold/bronze */
+  --bp-accent: #d3b88c; /* Light gold */
+  --bp-dark: #2b3a42; /* Dark blue-gray */
+
+  /* Spacing */
+  --bp-space-1: 0.25rem;
+  --bp-space-2: 0.5rem;
+  --bp-space-3: 1rem;
+  --bp-space-4: 1.5rem;
+  --bp-space-5: 3rem;
+  --bp-space-6: 4.5rem;
+
+  /* Border radius */
+  --bp-radius-sm: 0.25rem;
+  --bp-radius-md: 0.5rem;
+  --bp-radius-lg: 1rem;
+}
+
+/* Global Typography */
+body {
+  font-family: var(--bs-font-sans-serif);
+  color: #fff;
+  line-height: 1.6;
+  background-color: var(--dark-bg);
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
+  font-family: var(--bs-font-serif);
+  font-weight: 700;
+  margin-bottom: var(--bp-space-3);
+  color: var(--neon-cyan);
+}
+
+
+/* Navbar Styles */
+.navbar {
+  padding: var(--bp-space-3) 0;
+  background-color: var(--dark-accent) !important;
+  border-bottom: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.navbar-brand {
+  font-family: var(--bs-font-serif);
+  font-size: var(--fs-2xl);
+  color: var(--neon-cyan) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  font-weight: 800;
+  letter-spacing: 2px;
+
+}
+
+.navbar-nav .nav-link {
+  padding: var(--bp-space-2) var(--bp-space-3);
+  font-weight: 500;
+  color: #fff !important;
+  transition: color 0.2s ease;
+  font-size: var(--fs-lg);
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--neon-cyan) !important;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+
+
+/* Button Styles */
+.btn {
+  padding: var(--bp-space-2) var(--bp-space-4);
+  border-radius: var(--bp-radius-sm);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--neon-cyan), #0af);
+  border: none;
+  color: #000;
+  font-weight: bold;
+  
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.btn-outline-primary {
+  color: var(--neon-cyan);
+  border-color: var(--neon-cyan);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--neon-cyan);
+  color: var(--bp-white);
+}
+
+/* Footer */
+footer {
+  background-color: var(--bp-gray-900);
+  color: var(--bp-gray-300);
+  padding-top: var(--bp-space-5);
+}
+
+footer h5 {
+  color: var(--neon-cyan);
+  margin-bottom: var(--bp-space-3);
+  font-size: var(--fs-md);
+}
+
+footer ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: var(--bp-space-4);
+}
+
+footer ul li {
+  margin-bottom: var(--bp-space-2);
+}
+
+footer a {
+  color: var(--bp-gray-400);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: var(--neon-cyan);
+  text-decoration: none;
+}
+
+.footer-bottom {
+  padding: var(--bp-space-3) 0;
+  border-top: 1px solid var(--neon-cyan);
+  margin-top: var(--bp-space-4);
+}
+
+.footer-bottom p {
+  margin-bottom: 0;
+  font-size: var(--fs-sm);
+}
+
+/* Auth Page Specific Styles */
+.auth-page {
+  min-height: calc(100vh - 180px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bp-space-5) 0;
+}
+
+.auth-card {
+  background-color: var(--dark-accent);
+  border-radius: var(--bp-radius-md);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+  overflow: hidden;
+  width: 100%;
+  max-width: 500px;
+}
+
+.auth-header {
+  background-color: var(--bp-dark);
+  color: var(--bp-gray-200);
+  padding: var(--bp-space-4);
+  text-align: center;
+}
+
+.auth-header h2 {
+  color: var(--neon-cyan);
+  margin-bottom: var(--bp-space-2);
+}
+
+.auth-body {
+  padding: var(--bp-space-4);
+}
+
+.auth-body .form-label {
+  font-weight: 500;
+  color: var(--neon-cyan);
+}
+
+.auth-body .form-control {
+  padding: var(--bp-space-3);
+  border-radius: var(--bp-radius-sm);
+  border: 1px solid var(--bp-gray-300);
+  background-color: var(--dark-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-body .form-control:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 0.25rem rgba(0, 255, 255, 0.5);
+}
+
+.auth-footer {
+  background-color: var(--dark-accent);
+  color: #00ffff;
+  padding: var(--bp-space-3) var(--bp-space-4);
+  text-align: center;
+  border-top: 1px solid var(--neon-pink);
+}
+
+input::placeholder {
+  color: var(--bp-gray-600) !important;
+  opacity: 1 !important;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--bp-space-4) 0;
+  color:var(--neon-pink);
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--neon-pink);
+}
+
+.divider::before {
+  margin-right: var(--bp-space-3);
+}
+
+.divider::after {
+  margin-left: var(--bp-space-3);
+  
+}
+
+.social-login {
+  display: flex;
+  gap: var(--bp-space-2);
+  margin-bottom: var(--bp-space-3);
+}
+
+.social-login .btn {
+  flex: 1;
+}
+
+.btn-google {
+  background-color: #db4437;
+  border-color: #db4437;
+  color: white;
+}
+
+.btn-google:hover {
+  background-color: #c1351e;
+  border-color: #c1351e;
+}
+
+.btn-facebook {
+  background-color: #4267b2;
+  border-color: #4267b2;
+  color: white;
+}
+
+.btn-facebook:hover {
+  background-color: #385499;
+  border-color: #385499;
+}
+
+.password-requirements {
+  font-size: var(--fs-sm);
+  color: var(--bp-gray-500);
+  margin-top: var(--bp-space-1);
+}
+
+.password-requirements ul {
+  padding-left: var(--bp-space-4);
+  margin-bottom: 0;
+}
+.row{
+  color:#00ffff;
+}
+.b{
+color: var(--neon-cyan);
+}

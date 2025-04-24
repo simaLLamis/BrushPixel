@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Profile Settings | Horizon Gallery{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+    <link rel="stylesheet" href="{% static "css/navbar.css" %}">
+    <link rel="stylesheet" href="{% static "css/footer.css" %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Profile Settings</h1>
+        
+        <div class="settings-grid">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="#" id="user-tab" class="active">User Account</a></li>
+                    <li><a href="#" id="customer-tab">Customer Profile</a></li>
+                    {% if user.artist_profile %}
+                    <li><a href="#" id="artist-tab">Artist Profile</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="settings-content">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="notice notice-{% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <!-- User Account Settings Tab -->
+                <div id="user-settings" class="settings-section-tab active">
+                    <form method="post" action="{% url 'update_user' %}">
+                        {% csrf_token %}
+                        <div class="settings-section">
+                            <h2>User Information</h2>
+                            <div class="form-group">
+                                <label for="first_name">First Name</label>
+                                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Last Name</label>
+                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" value="{{ user.email }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" value="{{ user.username }}">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h2>Display Preferences</h2>
+                            <div class="form-group">
+                                <label>Theme</label>
+                                <div class="color-option">
+                                    <input type="radio" id="light" name="theme" value="light" {% if user.theme == 'light' %}checked{% endif %}>
+                                    <label for="light">Light</label>
+                                    <span class="color-sample color-light"></span>
+                                </div>
+                                <div class="color-option">
+                                    <input type="radio" id="dark" name="theme" value="dark" {% if user.theme == 'dark' or not user.theme %}checked{% endif %}>
+                                    <label for="dark">Dark</label>
+                                    <span class="color-sample color-dark"></span>
+                                </div>
+                                <div class="color-option">
+                                    <input type="radio" id="sepia" name="theme" value="sepia" {% if user.theme == 'sepia' %}checked{% endif %}>
+                                    <label for="sepia">Sepia</label>
+                                    <span class="color-sample color-sepia"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="text-size">Text Size</label>
+                                <select id="text-size" name="text_size">
+                                    <option value="small" {% if user.text_size == 'small' %}selected{% endif %}>Small</option>
+                                    <option value="medium" {% if user.text_size == 'medium' or not user.text_size %}selected{% endif %}>Medium</option>
+                                    <option value="large" {% if user.text_size == 'large' %}selected{% endif %}>Large</option>
+                                    <option value="xlarge" {% if user.text_size == 'xlarge' %}selected{% endif %}>Extra Large</option>
+                                </select>
+                            </div>
+                            <div class="toggle-option">
+                                <p>Enable High-Contrast Mode</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="high_contrast" {% if user.high_contrast %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <p>Reduce Motion</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="reduce_motion" {% if user.reduce_motion %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h2>Security</h2>
+                            <div class="form-group">
+                                <a href="{% url 'password_change' %}" class="btn btn-secondary">Change Password</a>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Customer Profile Settings Tab -->
+                <div id="customer-settings" class="settings-section-tab" style="display: none;">
+                    <form method="post" action="{% url 'update_customer_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="settings-section">
+                            <h2>Customer Profile</h2>
+                            <div class="form-group">
+                                <label for="profile_image">Profile Image</label>
+                                {% if user.customer_profile.profile_image %}
+                                    <div class="current-profile-image">
+                                        <img src="{{ user.customer_profile.profile_image.url }}" alt="Profile Image" style="max-width: 100px; border-radius: 50%;">
+                                    </div>
+                                {% endif %}
+                                <input type="file" id="profile_image" name="profile_image">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" name="phone" value="{{ user.customer_profile.phone }}">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h2>Shipping Address</h2>
+                            <div class="form-group">
+                                <label for="address_line1">Address Line 1</label>
+                                <input type="text" id="address_line1" name="address_line1" value="{{ user.customer_profile.address_line1 }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="address_line2">Address Line 2</label>
+                                <input type="text" id="address_line2" name="address_line2" value="{{ user.customer_profile.address_line2 }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city" name="city" value="{{ user.customer_profile.city }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State/Province</label>
+                                <input type="text" id="state" name="state" value="{{ user.customer_profile.state }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="zip_code">ZIP/Postal Code</label>
+                                <input type="text" id="zip_code" name="zip_code" value="{{ user.customer_profile.zip_code }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <input type="text" id="country" name="country" value="{{ user.customer_profile.country }}">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h2>Communication Preferences</h2>
+                            <div class="toggle-option">
+                                <p>Subscribe to Newsletter</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="newsletter_subscribed" {% if user.customer_profile.newsletter_subscribed %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <p>Email Notifications for New Exhibitions</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="exhibitions_notification" {% if user.notification_settings.exhibitions %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <p>Email Notifications for Featured Artists</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="artists_notification" {% if user.notification_settings.artists %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <p>Event Reminders</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="events_notification" {% if user.notification_settings.events %}checked{% endif %}>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Artist Profile Settings Tab -->
+                {% if user.artist_profile %}
+                <div id="artist-settings" class="settings-section-tab" style="display: none;">
+                    <form method="post" action="{% url 'update_artist_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="settings-section">
+                            <h2>Artist Profile</h2>
+                            <div class="form-group">
+                                <label for="artist_profile_image">Profile Image</label>
+                                {% if user.artist_profile.profile_image %}
+                                    <div class="current-profile-image">
+                                        <img src="{{ user.artist_profile.profile_image.url }}" alt="Artist Profile Image" style="max-width: 100px; border-radius: 50%;">
+                                    </div>
+                                {% endif %}
+                                <input type="file" id="artist_profile_image" name="profile_image">
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Artist Bio</label>
+                                <textarea id="bio" name="bio" rows="5">{{ user.artist_profile.bio }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" name="location" value="{{ user.artist_profile.location }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="style">Artistic Style</label>
+                                <input type="text" id="style" name="style" value="{{ user.artist_profile.style }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" id="website" name="website" value="{{ user.artist_profile.website }}">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h2>Social Media</h2>
+                            <div class="form-group">
+                                <label for="social_instagram">Instagram</label>
+                                <input type="text" id="social_instagram" name="social_instagram" value="{{ user.artist_profile.social_instagram }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="social_facebook">Facebook</label>
+                                <input type="text" id="social_facebook" name="social_facebook" value="{{ user.artist_profile.social_facebook }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="social_twitter">Twitter</label>
+                                <input type="text" id="social_twitter" name="social_twitter" value="{{ user.artist_profile.social_twitter }}">
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab navigation
+        const userTab = document.getElementById('user-tab');
+        const customerTab = document.getElementById('customer-tab');
+        const artistTab = document.getElementById('artist-tab');
+        
+        const userSettings = document.getElementById('user-settings');
+        const customerSettings = document.getElementById('customer-settings');
+        const artistSettings = document.getElementById('artist-settings');
+        
+        // User tab click
+        userTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update active tab
+            userTab.classList.add('active');
+            customerTab.classList.remove('active');
+            if (artistTab) artistTab.classList.remove('active');
+            
+            // Show relevant content
+            userSettings.style.display = 'block';
+            customerSettings.style.display = 'none';
+            if (artistSettings) artistSettings.style.display = 'none';
+        });
+        
+        // Customer tab click
+        customerTab.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update active tab
+            userTab.classList.remove('active');
+            customerTab.classList.add('active');
+            if (artistTab) artistTab.classList.remove('active');
+            
+            // Show relevant content
+            userSettings.style.display = 'none';
+            customerSettings.style.display = 'block';
+            if (artistSettings) artistSettings.style.display = 'none';
+        });
+        
+        // Artist tab click (if exists)
+        if (artistTab) {
+            artistTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active tab
+                userTab.classList.remove('active');
+                customerTab.classList.remove('active');
+                artistTab.classList.add('active');
+                
+                // Show relevant content
+                userSettings.style.display = 'none';
+                customerSettings.style.display = 'none';
+                artistSettings.style.display = 'block';
+            });
+        }
+    });
+</script>
+{% endblock %}
