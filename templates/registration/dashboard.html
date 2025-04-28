@@ -1,1034 +1,1238 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Dashboard | Brush & Pixel{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
-    <!-- Dashboard Layout -->
-    <div class="dashboard-wrapper">
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="user-info">
-                <div class="user-avatar">JD</div>
-                <div class="user-details">
-                    <h5>John Doe</h5>
-                    <p>Art Enthusiast</p>
-                </div>
-            </div>
+<div class="dashboard-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="user-info">
+        <div class="user-avatar">
+          {% if request.user.artist_profile.photo_profile %}
+            <img src="{{ request.user.artist_profile.photo_profile.url }}" alt="{{ request.user.get_full_name }}">
+          {% elif request.user.customer_profile %}
+            <div class="initials-avatar">{{ request.user.initials }}</div>
+          {% endif %}
         </div>
-        <ul class="nav nav-sidebar flex-column">
-            <li class="nav-item">
-                <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#profile" data-bs-toggle="tab">
-                <i class="fas fa-user"></i> My Profile
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#cart" data-bs-toggle="tab">
-                <i class="fas fa-shopping-cart"></i> Shopping Cart
-                <span class="badge bg-primary rounded-pill ms-auto">2</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#orders" data-bs-toggle="tab">
-                <i class="fas fa-history"></i> Order History
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#bookmarks" data-bs-toggle="tab">
-                <i class="fas fa-heart"></i> Bookmarks
-                <span class="badge bg-secondary rounded-pill ms-auto">5</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#commissions" data-bs-toggle="tab">
-                <i class="fas fa-paint-brush"></i> My Commissions
-                </a>
-            </li>
+        <div class="user-details">
+          <h5>{{ request.user.get_full_name }}</h5>
+          <p>
+            {% if request.user.artist_profile %}
+              <span class="badge bg-primary">Artist</span>
+            {% else %}
+              <span class="badge bg-secondary">Collector</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+    <ul class="nav nav-sidebar flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#profile" data-bs-toggle="tab">
+          <i class="fas fa-user"></i> My Profile
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#cart" data-bs-toggle="tab">
+          <i class="fas fa-shopping-cart"></i> Shopping Cart
+          {% if cart_items.count > 0 %}
+            <span class="badge bg-primary rounded-pill ms-auto">{{ cart_items.count }}</span>
+          {% endif %}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#orders" data-bs-toggle="tab">
+          <i class="fas fa-history"></i> Order History
+        </a>
+      </li>
+      {% if request.user.artist_profile %}
+        <li class="nav-item">
+          <a class="nav-link" href="#artworks" data-bs-toggle="tab">
+            <i class="fas fa-palette"></i> My Artworks
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#commissions" data-bs-toggle="tab">
+            <i class="fas fa-paint-brush"></i> Commissions
+            {% if new_commissions > 0 %}
+              <span class="badge bg-danger rounded-pill ms-auto">{{ new_commissions }}</span>
+            {% endif %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#sales" data-bs-toggle="tab">
+            <i class="fas fa-chart-line"></i> Sales
+          </a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="#wishlist" data-bs-toggle="tab">
+            <i class="fas fa-heart"></i> Wishlist
+            {% if wishlist_items.count > 0 %}
+              <span class="badge bg-danger rounded-pill ms-auto">{{ wishlist_items.count }}</span>
+            {% endif %}
+          </a>
+        </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="#settings" data-bs-toggle="tab">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+      </li>
+      <li class="nav-item mt-5">
+        <a class="nav-link text-danger" href="{% url 'logout' %}">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </li>
+    </ul>
+  </aside>
 
-            <li class="nav-item mt-5">
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn nav-link text-danger w-100"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                </form>
-            </li>
-        </ul>
-    </aside>
+  <!-- Content Area -->
+  <main class="content-wrapper">
+    <div class="tab-content">
+      <!-- Dashboard Tab -->
+      <div class="tab-pane fade show active" id="dashboard">
+        <div class="dashboard-header">
+          <h2>Dashboard</h2>
+          <div>
+            <span class="text-muted me-2">Last login: {{ request.user.last_login|date:"F j, Y, g:i a" }}</span>
+          </div>
+        </div>
 
-    <!-- Content Area -->
-    <main class="content-wrapper">
-        <div class="tab-content">
-        <!-- Dashboard Tab -->
-        <div class="tab-pane fade show active" id="dashboard">
-            <div class="dashboard-header">
-            <h2>Dashboard</h2>
-            <div>
-                <span class="text-muted me-2">Last login: Today, 10:25 AM</span>
-            </div>
-            </div>
-
-            <div class="row">
+        {% if request.user.artist_profile %}
+          <!-- Artist Dashboard -->
+          <div class="row">
             <div class="col-md-4 mb-4">
-                <div class="card">
+              <div class="card h-100">
                 <div class="card-body text-center">
-                    <i
-                    class="fas fa-shopping-bag fa-3x mb-3"
-                    style="color: var(--bp-primary)"
-                    ></i>
-                    <h5>Active Orders</h5>
-                    <p class="display-4 fw-bold">2</p>
-                    <a
-                    href="#orders"
-                    class="btn btn-sm btn-outline-primary"
-                    data-bs-toggle="tab"
-                    >View All Orders</a
-                    >
+                  <i class="fas fa-palette fa-3x mb-3 text-primary"></i>
+                  <h5>Artworks</h5>
+                  <p class="display-4 fw-bold">{{ artwork_count }}</p>
+                  <a href="#artworks" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Artworks</a>
                 </div>
-                </div>
+              </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="card">
+              <div class="card h-100">
                 <div class="card-body text-center">
-                    <i
-                    class="fas fa-heart fa-3x mb-3"
-                    style="color: var(--bp-secondary)"
-                    ></i>
-                    <h5>Bookmarked Items</h5>
-                    <p class="display-4 fw-bold">5</p>
-                    <a
-                    href="#bookmarks"
-                    class="btn btn-sm btn-outline-primary"
-                    data-bs-toggle="tab"
-                    >View Bookmarks</a
-                    >
+                  <i class="fas fa-paint-brush fa-3x mb-3 text-success"></i>
+                  <h5>Commissions</h5>
+                  <p class="display-4 fw-bold">{{ commission_count }}</p>
+                  <a href="#commissions" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Commissions</a>
                 </div>
-                </div>
+              </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="card">
+              <div class="card h-100">
                 <div class="card-body text-center">
-                    <i
-                    class="fas fa-paint-brush fa-3x mb-3"
-                    style="color: var(--bp-accent)"
-                    ></i>
-                    <h5>Commissions</h5>
-                    <p class="display-4 fw-bold">1</p>
-                    <a
-                    href="#commissions"
-                    class="btn btn-sm btn-outline-primary"
-                    data-bs-toggle="tab"
-                    >View Commissions</a
-                    >
+                  <i class="fas fa-dollar-sign fa-3x mb-3 text-info"></i>
+                  <h5>Sales</h5>
+                  <p class="display-4 fw-bold">{{ total_sales|default:"0" }}</p>
+                  <a href="#sales" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Sales</a>
                 </div>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
 
-            <div class="row">
-            <div class="col-md-8 mb-4">
-                <div class="card">
-                <div
-                    class="card-header d-flex justify-content-between align-items-center"
-                >
-                    <h5>Recent Orders</h5>
-                    <a
-                    href="#orders"
-                    class="btn btn-sm btn-link"
-                    data-bs-toggle="tab"
-                    >View All</a
-                    >
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5>Recent Commissions</h5>
+                  <a href="#commissions" class="btn btn-sm btn-link" data-bs-toggle="tab">View All</a>
                 </div>
                 <div class="card-body">
-                    <div class="order-card p-3 mb-3 border rounded">
-                    <div class="order-header">
+                  {% for commission in recent_commissions %}
+                    <div class="commission-item p-3 mb-3 border rounded">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
-                        <span class="order-id">#38293</span>
-                        <span class="order-date ms-3">March 2, 2025</span>
+                          <span class="commission-id">#COM-{{ commission.id }}</span>
+                          <span class="commission-status badge bg-{% if commission.status == 'completed' %}success{% elif commission.status == 'in_progress' %}warning{% else %}info{% endif %} ms-2">
+                            {{ commission.get_status_display }}
+                          </span>
                         </div>
-                        <span class="order-status shipped">Shipped</span>
+                        <span class="commission-date text-muted">{{ commission.created_at|date:"M j, Y" }}</span>
+                      </div>
+                      <h6>{{ commission.title }}</h6>
+                      <p class="mb-2">{{ commission.description|truncatewords:20 }}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Budget: ${{ commission.budget|default:"Not specified" }}</span>
+                        <a href="{% url 'commission_detail' commission.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                      </div>
                     </div>
-                    <div class="order-items">
-                        <img
-                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="order-item-img"
-                        />
-                        <img
-                        src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="order-item-img"
-                        />
+                  {% empty %}
+                    <div class="text-center py-4">
+                      <i class="fas fa-paint-brush fa-3x text-muted mb-3"></i>
+                      <p class="text-muted">No recent commissions</p>
                     </div>
-                    <div
-                        class="d-flex justify-content-between align-items-center"
-                    >
-                        <span class="order-price">$1,130</span>
-                        <a href="#" class="btn btn-sm btn-outline-primary"
-                        >Track Order</a
-                        >
-                    </div>
-                    </div>
-
-                    <div class="order-card p-3 border rounded">
-                    <div class="order-header">
-                        <div>
-                        <span class="order-id">#37891</span>
-                        <span class="order-date ms-3">February 15, 2025</span>
-                        </div>
-                        <span class="order-status delivered">Delivered</span>
-                    </div>
-                    <div class="order-items">
-                        <img
-                        src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="order-item-img"
-                        />
-                    </div>
-                    <div
-                        class="d-flex justify-content-between align-items-center"
-                    >
-                        <span class="order-price">$750</span>
-                        <a href="#" class="btn btn-sm btn-outline-primary"
-                        >View Details</a
-                        >
-                    </div>
-                    </div>
+                  {% endfor %}
                 </div>
-                </div>
+              </div>
             </div>
 
+            <div class="col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5>Recent Sales</h5>
+                  <a href="#sales" class="btn btn-sm btn-link" data-bs-toggle="tab">View All</a>
+                </div>
+                <div class="card-body">
+                  {% for sale in recent_sales %}
+                    <div class="sale-item p-3 mb-3 border rounded">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                          <span class="order-id">Order #{{ sale.order.order_number }}</span>
+                          <span class="badge bg-{% if sale.order.status == 'completed' %}success{% else %}warning{% endif %} ms-2">
+                            {{ sale.order.get_status_display }}
+                          </span>
+                        </div>
+                        <span class="sale-date text-muted">{{ sale.order.created_at|date:"M j, Y" }}</span>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <img src="{{ sale.artwork.image_principale.url }}" class="me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                        <div>
+                          <h6 class="mb-1">{{ sale.artwork.title }}</h6>
+                          <p class="text-muted small mb-1">{{ sale.quantity }} × ${{ sale.price }}</p>
+                          <span class="fw-bold">${{ sale.total_price }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  {% empty %}
+                    <div class="text-center py-4">
+                      <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                      <p class="text-muted">No recent sales</p>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <!-- Collector Dashboard -->
+          <div class="row">
             <div class="col-md-4 mb-4">
-                <div class="card">
-                <div
-                    class="card-header d-flex justify-content-between align-items-center"
-                >
-                    <h5>Recently Viewed</h5>
-                    <a href="#" class="btn btn-sm btn-link">View All</a>
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <i class="fas fa-shopping-bag fa-3x mb-3 text-primary"></i>
+                  <h5>Orders</h5>
+                  <p class="display-4 fw-bold">{{ orders.count }}</p>
+                  <a href="#orders" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Orders</a>
                 </div>
-                <div class="card-body p-3">
-                    <div class="d-flex mb-3 pb-3 border-bottom">
-                    <img
-                        src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="me-3"
-                        style="
-                        width: 60px;
-                        height: 80px;
-                        object-fit: cover;
-                        border-radius: 4px;
-                        "
-                    />
-                    <div>
-                        <h6 class="mb-1">Abstract Harmony</h6>
-                        <p class="text-muted small mb-1">Sophia Lee</p>
-                        <span class="fw-bold">$520</span>
-                    </div>
-                    </div>
-                    <div class="d-flex mb-3 pb-3 border-bottom">
-                    <img
-                        src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="me-3"
-                        style="
-                        width: 60px;
-                        height: 80px;
-                        object-fit: cover;
-                        border-radius: 4px;
-                        "
-                    />
-                    <div>
-                        <h6 class="mb-1">Golden Horizon</h6>
-                        <p class="text-muted small mb-1">Marcus Rivera</p>
-                        <span class="fw-bold">$750</span>
-                    </div>
-                    </div>
-                    <div class="d-flex">
-                    <img
-                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="me-3"
-                        style="
-                        width: 60px;
-                        height: 80px;
-                        object-fit: cover;
-                        border-radius: 4px;
-                        "
-                    />
-                    <div>
-                        <h6 class="mb-1">Seaside Dreams</h6>
-                        <p class="text-muted small mb-1">Emma Parker</p>
-                        <span class="fw-bold">$450</span>
-                    </div>
-                    </div>
-                </div>
-                </div>
+              </div>
             </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <i class="fas fa-heart fa-3x mb-3 text-danger"></i>
+                  <h5>Wishlist</h5>
+                  <p class="display-4 fw-bold">{{ wishlist_items.count }}</p>
+                  <a href="#wishlist" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Wishlist</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <i class="fas fa-paint-brush fa-3x mb-3 text-success"></i>
+                  <h5>Commissions</h5>
+                  <p class="display-4 fw-bold">{{ commissions.count }}</p>
+                  <a href="#commissions" class="btn btn-sm btn-outline-primary" data-bs-toggle="tab">View Commissions</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5>Recent Orders</h5>
+                  <a href="#orders" class="btn btn-sm btn-link" data-bs-toggle="tab">View All</a>
+                </div>
+                <div class="card-body">
+                  {% for order in recent_orders %}
+                    <div class="order-card p-3 mb-3 border rounded">
+                      <div class="order-header">
+                        <div>
+                          <span class="order-id">#{{ order.order_number }}</span>
+                          <span class="order-date ms-3">{{ order.created_at|date:"M j, Y" }}</span>
+                        </div>
+                        <span class="order-status badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'shipped' %}info{% elif order.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                          {{ order.get_status_display }}
+                        </span>
+                      </div>
+                      <div class="order-items">
+                        {% for item in order.items.all|slice:":3" %}
+                          <img src="{{ item.artwork.image_principale.url }}" class="order-item-img" alt="{{ item.artwork.title }}" title="{{ item.artwork.title }}">
+                        {% endfor %}
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="order-price">${{ order.grand_total }}</span>
+                        <div>
+                          {% if order.status == 'shipped' %}
+                            <a href="#" class="btn btn-sm btn-outline-primary me-2">Track Order</a>
+                          {% elif order.status == 'delivered' %}
+                            <a href="#" class="btn btn-sm btn-outline-primary me-2">Write Review</a>
+                          {% endif %}
+                          <a href="{% url 'order_detail' order.order_number %}" class="btn btn-sm btn-primary">Details</a>
+                        </div>
+                      </div>
+                    </div>
+                  {% empty %}
+                    <div class="text-center py-4">
+                      <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                      <p class="text-muted">No recent orders</p>
+                      <a href="#" class="btn btn-primary">Browse Gallery</a>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5>Recently Viewed</h5>
+                  <a href="#" class="btn btn-sm btn-link">Browse Gallery</a>
+                </div>
+                <div class="card-body">
+                  {% if recently_viewed %}
+                    {% for artwork in recently_viewed %}
+                      <div class="d-flex mb-3 pb-3 border-bottom">
+                        <a href="{{ artwork.get_absolute_url }}">
+                          <img src="{{ artwork.image_principale.url }}" class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                        </a>
+                        <div>
+                          <h6 class="mb-1">{{ artwork.title }}</h6>
+                          <p class="text-muted small mb-1">{{ artwork.artist.full_name }}</p>
+                          <span class="fw-bold">${{ artwork.price }}</span>
+                          <div class="mt-2">
+                            <a href="{{ artwork.get_absolute_url }}" class="btn btn-sm btn-outline-primary me-2">View</a>
+                            <form action="{% url 'add_to_cart' %}" method="post" class="d-inline">
+                              {% csrf_token %}
+                              <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+                              <button type="submit" class="btn btn-sm btn-primary">Add to Cart</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    <div class="text-center py-4">
+                      <i class="fas fa-eye fa-3x text-muted mb-3"></i>
+                      <p class="text-muted">No recently viewed items</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Profile Tab -->
+      <div class="tab-pane fade" id="profile">
+        <div class="dashboard-header">
+          <h2>My Profile</h2>
+          <a href="#settings" class="btn btn-sm btn-primary" data-bs-toggle="tab">
+            <i class="fas fa-edit me-1"></i> Edit Profile
+          </a>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-body text-center">
+                <div class="avatar-upload mx-auto">
+                  {% if request.user.artist_profile and request.user.artist_profile.photo_profile %}
+                    <img src="{{ request.user.artist_profile.photo_profile.url }}" class="profile-avatar rounded-circle" alt="{{ request.user.get_full_name }}">
+                  {% else %}
+                    <div class="profile-avatar mx-auto d-flex align-items-center justify-content-center">
+                      {{ request.user.initials }}
+                    </div>
+                  {% endif %}
+                </div>
+                <h4 class="mb-1">lamis</h4>
+                <p class="text-muted mb-3">
+                  {% if request.user.artist_profile %}
+                    <span class="badge bg-primary">Artist</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Collector</span>
+                  {% endif %}
+                </p>
+                <p class="text-muted">
+                  Member since {{ request.user.date_joined|date:"F Y" }}
+                </p>
+              </div>
             </div>
 
             <div class="card">
-            <div class="card-header">
-                <h5>Recommended For You</h5>
+              <div class="card-header">
+                <h5>Account Stats</h5>
+              </div>
+              <div class="card-body">
+                {% if request.user.artist_profile %}
+                  <div class="stat-item">
+                    <i class="fas fa-palette me-2 text-primary"></i>
+                    <span>{{ request.user.artist_profile.artwork_count }} Artworks</span>
+                  </div>
+                  <div class="stat-item">
+                    <i class="fas fa-paint-brush me-2 text-success"></i>
+                    <span>{{ request.user.artist_profile.commission_count }} Commissions</span>
+                  </div>
+                  <div class="stat-item">
+                    <i class="fas fa-star me-2 text-warning"></i>
+                    <span>
+                      {% if request.user.artist_profile.average_rating %}
+                        {{ request.user.artist_profile.average_rating|floatformat:1 }} Average Rating
+                      {% else %}
+                        Not rated yet
+                      {% endif %}
+                    </span>
+                  </div>
+                {% else %}
+                  <div class="stat-item">
+                    <i class="fas fa-shopping-bag me-2 text-primary"></i>
+                    <span>{{ request.user.customer_profile.orders.count }} Orders</span>
+                  </div>
+                  <div class="stat-item">
+                    <i class="fas fa-paint-brush me-2 text-success"></i>
+                    <span>{{ request.user.customer_profile.commissions.count }} Commissions</span>
+                  </div>
+                  <div class="stat-item">
+                    <i class="fas fa-heart me-2 text-danger"></i>
+                    <span>{{ wishlist_items.count }} Wishlist Items</span>
+                  </div>
+                {% endif %}
+              </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card h-100">
-                    <img
-                        src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        class="card-img-top"
-                        alt="Artwork"
-                    />
-                    <div class="card-body">
-                        <h5 class="card-title">Summer Dreams</h5>
-                        <p class="text-muted small">Maria Jones</p>
-                        <p class="fw-bold text-secondary">$380</p>
-                        <button class="btn btn-sm btn-outline-primary">
-                        View Details
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card h-100">
-                    <img
-                        src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        class="card-img-top"
-                        alt="Artwork"
-                    />
-                    <div class="card-body">
-                        <h5 class="card-title">Vibrant Motion</h5>
-                        <p class="text-muted small">Thomas Wu</p>
-                        <p class="fw-bold text-secondary">$540</p>
-                        <button class="btn btn-sm btn-outline-primary">
-                        View Details
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card h-100">
-                    <img
-                        src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        class="card-img-top"
-                        alt="Artwork"
-                    />
-                    <div class="card-body">
-                        <h5 class="card-title">Digital Frontiers</h5>
-                        <p class="text-muted small">Alexis Chen</p>
-                        <p class="fw-bold text-secondary">$420</p>
-                        <button class="btn btn-sm btn-outline-primary">
-                        View Details
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card h-100">
-                    <img
-                        src="https://images.unsplash.com/photo-1577720580479-7d839d829c73?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        class="card-img-top"
-                        alt="Artwork"
-                    />
-                    <div class="card-body">
-                        <h5 class="card-title">Eternal Light</h5>
-                        <p class="text-muted small">Sarah Miller</p>
-                        <p class="fw-bold text-secondary">$695</p>
-                        <button class="btn btn-sm btn-outline-primary">
-                        View Details
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
+          </div>
 
-        <!-- Profile Tab -->
-        <div class="tab-pane fade" id="profile">
-            <div class="dashboard-header">
-            <h2>My Profile</h2>
-            </div>
-
-            <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                <div class="card-body text-center">
-                    <div class="avatar-upload mx-auto">
-                    <div class="profile-avatar mx-auto">JD</div>
-                    <div class="avatar-edit">
-                        <input
-                        type="file"
-                        id="imageUpload"
-                        accept=".png, .jpg, .jpeg"
-                        />
-                        <label for="imageUpload"
-                        ><i class="fas fa-camera"></i
-                        ></label>
-                    </div>
-                    </div>
-                    <h4 class="mb-1">John Doe</h4>
-                    <p class="text-muted mb-3">Art Enthusiast</p>
-                    <div class="d-grid">
-                    <button class="btn btn-outline-primary mb-2">
-                        Edit Profile
-                    </button>
-                    </div>
-                </div>
-                </div>
-
-                <div class="card mt-4">
-                <div class="card-header">
-                    <h5>Account Information</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Member Since:</strong> January 15, 2025</p>
-                    <p><strong>Orders Completed:</strong> 5</p>
-                    <p><strong>Preferences:</strong> Paintings, Photography</p>
-                    <p><strong>Newsletter:</strong> Subscribed</p>
-                </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
-                <div class="card mb-4">
-                <div class="card-header">
-                    <h5>Personal Information</h5>
-                </div>
-                <div class="card-body">
-                    <form>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                        <label for="firstName" class="form-label"
-                            >First Name</label
-                        >
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="firstName"
-                            value="John"
-                        />
-                        </div>
-                        <div class="col-md-6">
-                        <label for="lastName" class="form-label"
-                            >Last Name</label
-                        >
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="lastName"
-                            value="Doe"
-                        />
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label"
-                        >Email Address</label
-                        >
-                        <input
-                        type="email"
-                        class="form-control"
-                        id="email"
-                        value="john.doe@example.com"
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label"
-                        >Phone Number</label
-                        >
-                        <input
-                        type="tel"
-                        class="form-control"
-                        id="phone"
-                        value="(555) 123-4567"
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <label for="bio" class="form-label">Bio</label>
-                        <textarea class="form-control" id="bio" rows="3">
-    Art enthusiast with a passion for contemporary paintings and photography. I enjoy collecting pieces that tell a story and create conversation.</textarea
-                        >
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        Save Changes
-                    </button>
-                    </form>
-                </div>
-                </div>
-
-                <div class="card">
-                <div class="card-header">
-                    <h5>Address Information</h5>
-                </div>
-                <div class="card-body">
-                    <form>
-                    <div class="mb-3">
-                        <label for="address" class="form-label"
-                        >Street Address</label
-                        >
-                        <input
-                        type="text"
-                        class="form-control"
-                        id="address"
-                        value="123 Art Street"
-                        />
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                        <label for="city" class="form-label">City</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="city"
-                            value="New York"
-                        />
-                        </div>
-                        <div class="col-md-3">
-                        <label for="state" class="form-label">State</label>
-                        <select class="form-select" id="state">
-                            <option value="NY" selected>NY</option>
-                            <option value="CA">CA</option>
-                            <option value="TX">TX</option>
-                            <option value="FL">FL</option>
-                        </select>
-                        </div>
-                        <div class="col-md-3">
-                        <label for="zip" class="form-label">Zip Code</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="zip"
-                            value="10001"
-                        />
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="country" class="form-label">Country</label>
-                        <select class="form-select" id="country">
-                        <option value="US" selected>United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="UK">United Kingdom</option>
-                        <option value="AU">Australia</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        Save Changes
-                    </button>
-                    </form>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <!-- Cart Tab -->
-        <div class="tab-pane fade" id="cart">
-            <div class="dashboard-header">
-            <h2>Shopping Cart</h2>
-            <div>
-                <span class="badge bg-primary rounded-pill">2 Items</span>
-            </div>
-            </div>
-
-            <div class="row">
-            <div class="col-lg-8">
-                <div class="card mb-4">
-                <div class="card-body">
-                    <!-- Cart Item 1 -->
-                    <div class="cart-item">
-                    <img
-                        src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="cart-item-img"
-                    />
-                    <div class="cart-item-info">
-                        <h5 class="cart-item-title">Seaside Dreams</h5>
-                        <p class="cart-item-artist">Emma Parker</p>
-                        <p class="cart-item-price">$450</p>
-                        <div class="cart-item-actions">
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash-alt me-1"></i> Remove
-                        </button>
-                        <button class="btn btn-sm btn-link text-primary ms-2">
-                            <i class="fas fa-heart me-1"></i> Save for later
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-
-                    <!-- Cart Item 2 -->
-                    <div class="cart-item">
-                    <img
-                        src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="cart-item-img"
-                    />
-                    <div class="cart-item-info">
-                        <h5 class="cart-item-title">Urban Reflections</h5>
-                        <p class="cart-item-artist">David Chen</p>
-                        <p class="cart-item-price">$680</p>
-                        <div class="cart-item-actions">
-                        <button class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash-alt me-1"></i> Remove
-                        </button>
-                        <button class="btn btn-sm btn-link text-primary ms-2">
-                            <i class="fas fa-heart me-1"></i> Save for later
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-
-                <div class="card">
-                <div class="card-header">
-                    <h5>Saved For Later</h5>
-                </div>
-                <div class="card-body">
-                    <div class="cart-item">
-                    <img
-                        src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                        alt="Artwork"
-                        class="cart-item-img"
-                    />
-                    <div class="cart-item-info">
-                        <h5 class="cart-item-title">Abstract Harmony</h5>
-                        <p class="cart-item-artist">Sophia Lee</p>
-                        <p class="cart-item-price">$520</p>
-                        <div class="cart-item-actions">
-                        <button class="btn btn-sm btn-primary">
-                            <i class="fas fa-shopping-cart me-1"></i> Move to
-                            Cart
-                        </button>
-                        <button class="btn btn-sm btn-link text-danger ms-2">
-                            <i class="fas fa-trash-alt me-1"></i> Remove
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card mb-4">
-                <div class="card-header">
-                    <h5>Order Summary</h5>
-                </div>
-                <div class="card-body">
-                    <div class="cart-summary">
-                    <div class="cart-summary-item">
-                        <span>Subtotal (2 items)</span>
-                        <span>$1,130.00</span>
-                    </div>
-                    <div class="cart-summary-item">
-                        <span>Shipping</span>
-                        <span>$35.00</span>
-                    </div>
-                    <div class="cart-summary-item">
-                        <span>Tax</span>
-                        <span>$90.40</span>
-                    </div>
-                    <div class="cart-summary-item total">
-                        <span>Total</span>
-                        <span>$1,255.40</span>
-                    </div>
-                    </div>
-                    <div class="d-grid gap-2 mt-4">
-                    <button class="btn btn-primary">
-                        Proceed to Checkout
-                    </button>
-                    <button class="btn btn-outline-primary">
-                        Continue Shopping
-                    </button>
-                    </div>
-                </div>
-                </div>
-
-                <div class="card">
-                <div class="card-header">
-                    <h5>Apply Coupon</h5>
-                </div>
-                <div class="card-body">
-                    <div class="input-group mb-3">
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Coupon code"
-                    />
-                    <button class="btn btn-primary" type="button">
-                        Apply
-                    </button>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <!-- Order History Tab -->
-        <div class="tab-pane fade" id="orders">
-            <div class="dashboard-header">
-            <h2>Order History</h2>
-            </div>
-
-            <ul class="nav nav-tabs mb-4">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">All Orders</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Processing</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Shipped</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Delivered</a>
-            </li>
-            </ul>
-
+          <div class="col-md-8">
             <div class="card mb-4">
-            <div class="card-body">
-                <div class="order-card p-3 mb-4 border rounded">
-                <div class="order-header">
-                    <div>
-                    <span class="order-id">#38293</span>
-                    <span class="order-date ms-3">March 2, 2025</span>
+              <div class="card-header">
+                <h5>Personal Information</h5>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <p class="form-control-static">lamis</p>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <p class="form-control-static">NES</p>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email Address</label>
+                  <p class="form-control-static">{{ request.user.email }}</p>
+                </div>
+                {% if request.user.artist_profile %}
+                  <div class="mb-3">
+                    <label class="form-label">Bio</label>
+                    <p class="form-control-static">{{ request.user.artist_profile.bio|linebreaksbr }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <p class="form-control-static">{{ request.user.artist_profile.location }}</p>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Social Links</label>
+                    <div class="social-links">
+                      {% if request.user.artist_profile.website %}
+                        <a href="{{ request.user.artist_profile.website }}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                          <i class="fas fa-globe"></i> Website
+                        </a>
+                      {% endif %}
+                      {% if request.user.artist_profile.instagram %}
+                        <a href="{{ request.user.artist_profile.instagram }}" target="_blank" class="btn btn-sm btn-outline-danger me-2">
+                          <i class="fab fa-instagram"></i> Instagram
+                        </a>
+                      {% endif %}
+                      {% if request.user.artist_profile.facebook %}
+                        <a href="{{ request.user.artist_profile.facebook }}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                          <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                      {% endif %}
                     </div>
-                    <span class="order-status shipped">Shipped</span>
-                </div>
-                <div class="order-items">
-                    <img
-                    src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                    <img
-                    src="https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                </div>
-                <div
-                    class="d-flex justify-content-between align-items-center"
-                >
-                    <span class="order-price">$1,130</span>
-                    <div>
-                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
-                        >Track Order</a
-                    >
-                    <a href="#" class="btn btn-sm btn-primary"
-                        >Order Details</a
-                    >
-                    </div>
-                </div>
-                </div>
-
-                <div class="order-card p-3 mb-4 border rounded">
-                <div class="order-header">
-                    <div>
-                    <span class="order-id">#37891</span>
-                    <span class="order-date ms-3">February 15, 2025</span>
-                    </div>
-                    <span class="order-status delivered">Delivered</span>
-                </div>
-                <div class="order-items">
-                    <img
-                    src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                </div>
-                <div
-                    class="d-flex justify-content-between align-items-center"
-                >
-                    <span class="order-price">$750</span>
-                    <div>
-                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
-                        >Write Review</a
-                    >
-                    <a href="#" class="btn btn-sm btn-primary"
-                        >Order Details</a
-                    >
-                    </div>
-                </div>
-                </div>
-
-                <div class="order-card p-3 mb-4 border rounded">
-                <div class="order-header">
-                    <div>
-                    <span class="order-id">#37554</span>
-                    <span class="order-date ms-3">January 28, 2025</span>
-                    </div>
-                    <span class="order-status delivered">Delivered</span>
-                </div>
-                <div class="order-items">
-                    <img
-                    src="https://images.unsplash.com/photo-1544967082-d9d25d867d66?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                </div>
-                <div
-                    class="d-flex justify-content-between align-items-center"
-                >
-                    <span class="order-price">$520</span>
-                    <div>
-                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
-                        >Write Review</a
-                    >
-                    <a href="#" class="btn btn-sm btn-primary"
-                        >Order Details</a
-                    >
-                    </div>
-                </div>
-                </div>
-
-                <div class="order-card p-3 border rounded">
-                <div class="order-header">
-                    <div>
-                    <span class="order-id">#36921</span>
-                    <span class="order-date ms-3">December 10, 2024</span>
-                    </div>
-                    <span class="order-status delivered">Delivered</span>
-                </div>
-                <div class="order-items">
-                    <img
-                    src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                    <img
-                    src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    class="order-item-img"
-                    />
-                </div>
-                <div
-                    class="d-flex justify-content-between align-items-center"
-                >
-                    <span class="order-price">$920</span>
-                    <div>
-                    <a href="#" class="btn btn-sm btn-outline-primary me-2"
-                        >Write Review</a
-                    >
-                    <a href="#" class="btn btn-sm btn-primary"
-                        >Order Details</a
-                    >
-                    </div>
-                </div>
-                </div>
-            </div>
+                  </div>
+                {% endif %}
+              </div>
             </div>
 
-            <nav>
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                <a
-                    class="page-link"
-                    href="#"
-                    tabindex="-1"
-                    aria-disabled="true"
-                    >Previous</a
-                >
-                </li>
-                <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-                </li>
+            <div class="card">
+              <div class="card-header">
+                <h5>Address Information</h5>
+              </div>
+              <div class="card-body">
+                {% if request.user.customer_profile.address1 %}
+                  <address>
+                    <strong>{{ request.user.get_full_name }}</strong><br>
+                    {{ request.user.customer_profile.address1 }}<br>
+                    {% if request.user.customer_profile.address2 %}
+                      {{ request.user.customer_profile.address2 }}<br>
+                    {% endif %}
+                    {{ request.user.customer_profile.city }}, {{ request.user.customer_profile.state }} {{ request.user.customer_profile.postcode }}<br>
+                    {{ request.user.customer_profile.country }}<br>
+                    <abbr title="Phone">P:</abbr> {{ request.user.customer_profile.phone }}
+                  </address>
+                {% else %}
+                  <div class="alert alert-info">
+                    No address information saved. <a href="#settings" data-bs-toggle="tab">Add your address</a> for faster checkout.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shopping Cart Tab -->
+      <div class="tab-pane fade" id="cart">
+        <div class="dashboard-header">
+          <h2>Shopping Cart</h2>
+          {% if cart_items.count > 0 %}
+            <span class="badge bg-primary rounded-pill">{{ cart_items.count }} Items</span>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          <div class="col-lg-8">
+            {% if cart_items.count > 0 %}
+              <div class="card mb-4">
+                <div class="card-body">
+                  {% for item in cart_items %}
+                    <div class="cart-item d-flex align-items-center mb-3 pb-3 border-bottom">
+                      <img src="{{ item.artwork.image_principale.url }}" class="cart-item-img me-3" alt="{{ item.artwork.title }}">
+                      <div class="flex-grow-1">
+                        <h5 class="cart-item-title mb-1">{{ item.artwork.title }}</h5>
+                        <p class="cart-item-artist text-muted small mb-2">{{ item.artwork.artist.full_name }}</p>
+                        <p class="cart-item-price fw-bold mb-2">${{ item.artwork.price }}</p>
+                        <div class="d-flex align-items-center">
+                          <form action="{% url 'update_cart' %}" method="post" class="me-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <div class="input-group" style="width: 120px;">
+                              <button class="btn btn-outline-secondary decrease" type="button">-</button>
+                              <input type="number" name="quantity" class="form-control text-center" value="{{ item.quantity }}" min="1" max="10">
+                              <button class="btn btn-outline-secondary increase" type="button">+</button>
+                            </div>
+                          </form>
+                          <form action="{% url 'remove_from_cart' %}" method="post" class="me-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                              <i class="fas fa-trash-alt me-1"></i> Remove
+                            </button>
+                          </form>
+                          <form action="{% url 'move_to_wishlist' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                              <i class="fas fa-heart me-1"></i> Save
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="cart-item-total text-end" style="width: 100px;">
+                        <span class="fw-bold">${{ item.total_price }}</span>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% else %}
+              <div class="card mb-4">
+                <div class="card-body text-center py-5">
+                  <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                  <h4>Your cart is empty</h4>
+                  <p class="text-muted">Browse our gallery to find amazing artwork</p>
+                  <a href="{% url 'gallery' %}" class="btn btn-primary">Browse Gallery</a>
+                </div>
+              </div>
+            {% endif %}
+
+            {% if saved_items.count > 0 %}
+              <div class="card">
+                <div class="card-header">
+                  <h5>Saved For Later ({{ saved_items.count }})</h5>
+                </div>
+                <div class="card-body">
+                  {% for item in saved_items %}
+                    <div class="saved-item d-flex align-items-center mb-3 pb-3 border-bottom">
+                      <img src="{{ item.artwork.image_principale.url }}" class="me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                      <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ item.artwork.title }}</h6>
+                        <p class="text-muted small mb-2">{{ item.artwork.artist.full_name }}</p>
+                        <span class="fw-bold">${{ item.artwork.price }}</span>
+                      </div>
+                      <div class="saved-item-actions">
+                        <form action="{% url 'move_to_cart' %}" method="post" class="d-inline me-2">
+                          {% csrf_token %}
+                          <input type="hidden" name="item_id" value="{{ item.id }}">
+                          <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+                          </button>
+                        </form>
+                        <form action="{% url 'remove_from_wishlist' %}" method="post" class="d-inline">
+                          {% csrf_token %}
+                          <input type="hidden" name="item_id" value="{{ item.id }}">
+                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i> Remove
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if cart_items.count > 0 %}
+            <div class="col-lg-4">
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h5>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                  <div class="cart-summary">
+                    <div class="cart-summary-item d-flex justify-content-between mb-2">
+                      <span>Subtotal ({{ cart_items.count }} items)</span>
+                      <span>${{ cart.subtotal }}</span>
+                    </div>
+                    <div class="cart-summary-item d-flex justify-content-between mb-2">
+                      <span>Shipping</span>
+                      <span>{% if cart.subtotal > 500 %}Free{% else %}$35.00{% endif %}</span>
+                    </div>
+                    <div class="cart-summary-item d-flex justify-content-between mb-3">
+                      <span>Tax (8%)</span>
+                      <span>${{ cart.tax }}</span>
+                    </div>
+                    <div class="cart-summary-item d-flex justify-content-between fw-bold fs-5 pt-2 border-top">
+                      <span>Total</span>
+                      <span>${{ cart.grand_total }}</span>
+                    </div>
+                  </div>
+                  <div class="d-grid gap-2 mt-4">
+                    <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">
+                      Proceed to Checkout
+                    </a>
+                    <a href="{% url 'artwork_list' %}" class="btn btn-outline-primary">
+                      Continue Shopping
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h5>Apply Coupon</h5>
+                </div>
+                <div class="card-body">
+                  <form>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Coupon code">
+                      <button class="btn btn-primary" type="submit">Apply</button>
+                    </div>
+                  </form>
+                  <div class="alert alert-info small mb-0">
+                    <i class="fas fa-info-circle me-2"></i> Coupons can be applied at checkout
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Order History Tab -->
+      <div class="tab-pane fade" id="orders">
+        <div class="dashboard-header">
+          <h2>Order History</h2>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              Filter: All Orders
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">All Orders</a></li>
+              <li><a class="dropdown-item" href="#">Processing</a></li>
+              <li><a class="dropdown-item" href="#">Shipped</a></li>
+              <li><a class="dropdown-item" href="#">Delivered</a></li>
+              <li><a class="dropdown-item" href="#">Cancelled</a></li>
             </ul>
-            </nav>
+          </div>
         </div>
 
-        <!-- Bookmarks Tab -->
-        <div class="tab-pane fade" id="bookmarks">
+        <div class="card">
+          <div class="card-body">
+            {% if orders %}
+              {% for order in orders %}
+                <div class="order-card p-3 mb-4 border rounded">
+                  <div class="order-header d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <span class="order-id fw-bold">Order #{{ order.order_number }}</span>
+                      <span class="order-date text-muted ms-3">{{ order.created_at|date:"F j, Y" }}</span>
+                    </div>
+                    <span class="order-status badge bg-{% if order.status == 'delivered' %}success{% elif order.status == 'shipped' %}info{% elif order.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                      {{ order.get_status_display }}
+                    </span>
+                  </div>
+                  <div class="order-items d-flex mb-3">
+                    {% for item in order.items.all|slice:":4" %}
+                      <img src="{{ item.artwork.image_principale.url }}" class="order-item-img me-2" alt="{{ item.artwork.title }}" data-bs-toggle="tooltip" title="{{ item.artwork.title }}">
+                    {% endfor %}
+                    {% if order.items.count > 4 %}
+                      <div class="order-item-more">+{{ order.items.count|add:"-4" }} more</div>
+                    {% endif %}
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="fw-bold">${{ order.grand_total }}</span>
+                      <span class="text-muted ms-2">{{ order.items.count }} items</span>
+                    </div>
+                    <div>
+                      {% if order.status == 'shipped' %}
+                        <a href="#" class="btn btn-sm btn-outline-primary me-2">Track Order</a>
+                      {% elif order.status == 'delivered' %}
+                        <a href="#" class="btn btn-sm btn-outline-primary me-2">Write Review</a>
+                      {% endif %}
+                      <a href="{% url 'order_detail' order.order_number %}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-4"></i>
+                <h4>No orders yet</h4>
+                <p class="text-muted">Your completed orders will appear here</p>
+                <a href="{% url 'gallery' %}" class="btn btn-primary">Browse Gallery</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if orders.has_other_pages %}
+          <nav aria-label="Order pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+              {% if orders.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for i in orders.paginator.page_range %}
+                <li class="page-item {% if orders.number == i %}active{% endif %}">
+                  <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+              {% endfor %}
+
+              {% if orders.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+      </div>
+
+      <!-- Artworks Tab (Artist Only) -->
+<!-- Artworks Tab (Artist Only) -->
+<div class="tab-pane fade" id="artworks">
+  <div class="dashboard-header">
+    <h2>My Artworks</h2>
+    <a href="#" class="btn btn-primary">
+      <i class="fas fa-plus me-2"></i> Add New Artwork
+    </a>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="mb-0">Manage Your Artwork</h5>
+        </div>
+        <div class="col-md-6">
+          <form method="get" class="d-flex">
+            <input type="text" name="q" class="form-control me-2" placeholder="Search artworks..." value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-outline-secondary">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-body">
+      {% if artworks %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th width="120px">Image</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Views</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for artwork in artworks %}
+                <tr>
+                  <td>
+                    <img src="{{ artwork.image_principale.url }}" class="img-thumbnail" alt="{{ artwork.title }}" style="width: 100px; height: auto;">
+                  </td>
+                  <td>
+                    <a href="{% url 'artwork_detail' artwork.id %}">{{ artwork.title }}</a>
+                    <div class="text-muted small">{{ artwork.medium }}</div>
+                  </td>
+                  <td>${{ artwork.price }}</td>
+                  <td>
+                    <span class="badge bg-{% if artwork.status == 'available' %}success{% elif artwork.status == 'reserved' %}warning{% else %}secondary{% endif %}">
+                      {{ artwork.get_status_display }}
+                    </span>
+                  </td>
+                  <td>{{ artwork.views }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <a href="{% url 'edit_artwork' artwork.id %}" class="btn btn-outline-primary" title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button type="button" class="btn btn-outline-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteArtworkModal{{ artwork.id }}">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteArtworkModal{{ artwork.id }}" tabindex="-1" aria-labelledby="deleteArtworkModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="deleteArtworkModalLabel">Confirm Delete</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete "{{ artwork.title }}"?
+                            <div class="alert alert-warning mt-2">
+                              <i class="fas fa-exclamation-triangle me-2"></i>
+                              This action cannot be undone.
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{% url 'delete_artwork' artwork.id %}" method="post" class="d-inline">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="fas fa-palette fa-4x text-muted mb-4"></i>
+          <h4>No artworks found</h4>
+          <p class="text-muted">You haven't added any artworks yet</p>
+          <a href="#" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Add Your First Artwork
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if artworks.has_other_pages %}
+    <nav aria-label="Artwork pagination">
+      <ul class="pagination justify-content-center">
+        {% if artworks.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ artworks.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+
+        {% for i in artworks.paginator.page_range %}
+          <li class="page-item {% if artworks.number == i %}active{% endif %}">
+            <a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+          </li>
+        {% endfor %}
+
+        {% if artworks.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ artworks.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+            <!-- Commissions Tab (Artist Only) -->
+            <div class="tab-pane fade" id="commissions">
+              <div class="dashboard-header">
+                <h2>Commissions</h2>
+                <div>
+                  <span class="badge bg-primary rounded-pill">{{ commission_count }} Total</span>
+                  {% if new_commissions > 0 %}
+                    <span class="badge bg-danger rounded-pill ms-2">{{ new_commissions }} New</span>
+                  {% endif %}
+                </div>
+              </div>
+        
+              <div class="card mb-4">
+                <div class="card-header">
+                  <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                      <a class="nav-link active" href="#" data-bs-toggle="tab" data-bs-target="#allCommissions">All</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#requestedCommissions">Requested ({{ status_counts.requested }})</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#inProgressCommissions">In Progress ({{ status_counts.in_progress }})</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#completedCommissions">Completed ({{ status_counts.completed }})</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane fade show active" id="allCommissions">
+                      {% if commissions %}
+                        {% for commission in commissions %}
+                          {% include 'partials/commission_item.html' with commission=commission %}
+                        {% endfor %}
+                      {% else %}
+                        <div class="text-center py-5">
+                          <i class="fas fa-paint-brush fa-4x text-muted mb-4"></i>
+                          <h4>No commissions yet</h4>
+                          <p class="text-muted">When customers request commissions, they'll appear here</p>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <!-- Sales Tab (Artist Only) -->
+            <div class="tab-pane fade" id="sales">
+              <div class="dashboard-header">
+                <h2>Sales History</h2>
+                <div>
+                  <span class="badge bg-primary rounded-pill">{{ total_sales_count }} Total Sales</span>
+                  <span class="badge bg-success rounded-pill ms-2">${{ total_earnings }}</span>
+                </div>
+              </div>
+        
+              <div class="card mb-4">
+                <div class="card-header">
+                  <div class="row align-items-center">
+                    <div class="col-md-6">
+                      <h5 class="mb-0">Your Sales</h5>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search sales...">
+                        <button class="btn btn-outline-secondary" type="button">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  {% if sales %}
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Order</th>
+                            <th>Artwork</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for sale in sales %}
+                            <tr>
+                              <td>#{{ sale.order.order_number }}</td>
+                              <td>
+                                <a href="{{ sale.artwork.get_absolute_url }}">{{ sale.artwork.title }}</a>
+                              </td>
+                              <td>{{ sale.order.full_name }}</td>
+                              <td>{{ sale.order.created_at|date:"M j, Y" }}</td>
+                              <td>${{ sale.total_price }}</td>
+                              <td>
+                                <span class="badge bg-{% if sale.order.status == 'delivered' %}success{% elif sale.order.status == 'shipped' %}info{% else %}warning{% endif %}">
+                                  {{ sale.order.get_status_display }}
+                                </span>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% else %}
+                    <div class="text-center py-5">
+                      <i class="fas fa-chart-line fa-4x text-muted mb-4"></i>
+                      <h4>No sales yet</h4>
+                      <p class="text-muted">When your artworks are purchased, sales will appear here</p>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+        
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <div class="card h-100">
+                    <div class="card-header">
+                      <h5>Sales Overview</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="chart-container" style="position: relative; height: 250px;">
+                        <canvas id="salesChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                  <div class="card h-100">
+                    <div class="card-header">
+                      <h5>Top Selling Artworks</h5>
+                    </div>
+                    <div class="card-body">
+                      {% if top_selling_artworks %}
+                        {% for artwork in top_selling_artworks %}
+                          <div class="d-flex align-items-center mb-3">
+                            <img src="{{ artwork.image_principale.url }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                              <h6 class="mb-0">{{ artwork.title }}</h6>
+                              <small class="text-muted">{{ artwork.sales_count }} sales</small>
+                            </div>
+                            <div class="fw-bold">${{ artwork.total_earnings }}</div>
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        <div class="text-center py-4">
+                          <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                          <p class="text-muted">No top selling artworks yet</p>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endif %}
+          <!-- Wishlist Tab (Collector Only) -->
+          {% if not request.user.artist_profile %}
+            <div class="tab-pane fade" id="wishlist">
+              <div class="dashboard-header">
+                <h2>My Wishlist</h2>
+                <div>
+                  <span class="badge bg-primary rounded-pill">{{ wishlist_items.count }} Items</span>
+                </div>
+              </div>
+        
+              <div class="row">
+                {% if wishlist_items %}
+                  {% for item in wishlist_items %}
+                    <div class="col-md-4 mb-4">
+                      <div class="card h-100">
+                        <div class="card-img-top position-relative">
+                          <img src="{{ item.artwork.image_principale.url }}" class="card-img-top" alt="{{ item.artwork.title }}">
+                          <div class="wishlist-actions position-absolute top-0 end-0 p-2">
+                            <form action="{% url 'remove_from_wishlist' %}" method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="item_id" value="{{ item.id }}">
+                              <button type="submit" class="btn btn-sm btn-danger rounded-circle">
+                                <i class="fas fa-times"></i>
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <h5 class="card-title">{{ item.artwork.title }}</h5>
+                          <p class="card-text text-muted">{{ item.artwork.artist.full_name }}</p>
+                          <p class="price">${{ item.artwork.price }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                          <div class="d-grid gap-2">
+                            <form action="{% url 'add_to_cart' %}" method="post">
+                              {% csrf_token %}
+                              <input type="hidden" name="artwork_id" value="{{ item.artwork.id }}">
+                              <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                              </button>
+                            </form>
+                            <a href="{{ item.artwork.get_absolute_url }}" class="btn btn-outline-primary">View Details</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="col-12">
+                    <div class="card">
+                      <div class="card-body text-center py-5">
+                        <i class="fas fa-heart fa-4x text-muted mb-4"></i>
+                        <h4>Your wishlist is empty</h4>
+                        <p class="text-muted">Save your favorite artworks to purchase later</p>
+                        <a href="#" class="btn btn-primary">Browse Gallery</a>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        
+          <!-- Settings Tab -->
+          <div class="tab-pane fade" id="settings">
             <div class="dashboard-header">
-            <h2>My Bookmarks</h2>
-            <div>
-                <span class="badge bg-secondary rounded-pill">5 Items</span>
+              <h2>Account Settings</h2>
             </div>
+        
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Profile Information</h5>
+                  </div>
+                  <div class="card-body">
+                    <form method="post" action="#" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="first_name" value="{{ request.user.first_name }}">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="last_name" value="{{ request.user.last_name }}">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" name="email" value="{{ request.user.email }}">
+                      </div>
+                      {% if request.user.artist_profile %}
+                        <div class="mb-3">
+                          <label class="form-label">Profile Photo</label>
+                          <input type="file" class="form-control" name="photo_profile">
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Bio</label>
+                          <textarea class="form-control" name="bio" rows="3">{{ request.user.artist_profile.bio }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                          <label class="form-label">Location</label>
+                          <input type="text" class="form-control" name="location" value="{{ request.user.artist_profile.location }}">
+                        </div>
+                      {% endif %}
+                      <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="col-md-6 mb-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Change Password</h5>
+                  </div>
+                  <div class="card-body">
+                    <form method="post" action="{% url 'password_reset' %}">
+                      {% csrf_token %}
+                      <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" name="current_password" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" name="new_password1" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="new_password2" required>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Change Password</button>
+                    </form>
+                  </div>
+                </div>
+        
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6>Delete Account</h6>
+                    <p class="mb-0 text-muted">Permanently delete your account and all associated data</p>
+                  </div>
+                  <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                    Delete Account
+                  </button>
+                </div>
+              </div>
             </div>
-
-            <div class="bookmark-grid">
-            <!-- Bookmark 1 -->
-            <div class="bookmark-card card">
-                <div class="bookmark-actions">
-                <button
-                    class="btn btn-sm text-danger"
-                    title="Remove from bookmarks"
-                >
-                    <i class="fas fa-times"></i>
-                </button>
+        
+            <!-- Delete Account Modal -->
+            <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Confirm Account Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.</p>
+                    <div class="alert alert-danger">
+                      <i class="fas fa-exclamation-triangle me-2"></i>
+                      This will permanently delete all your artworks, commissions, and other data.
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="#" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete My Account</button>
+                    </form>
+                  </div>
                 </div>
-                <img
-                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                class="card-img-top"
-                alt="Artwork"
-                />
-                <div class="card-body">
-                <h5 class="card-title">Summer Dreams</h5>
-                <p class="artist-name">Maria Jones</p>
-                <p class="price">$380</p>
-                <div class="d-grid">
-                    <button class="btn btn-sm btn-primary mb-2">
-                    Add to Cart
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                    View Details
-                    </button>
-                </div>
-                </div>
+              </div>
             </div>
-
-            <!-- Bookmark 2 -->
-            <div class="bookmark-card card">
-                <div class="bookmark-actions">
-                <button
-                    class="btn btn-sm text-danger"
-                    title="Remove from bookmarks"
-                >
-                    <i class="fas fa-times"></i>
-                </button>
-                </div>
-                <img
-                src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                class="card-img-top"
-                alt="Artwork"
-                />
-                <div class="card-body">
-                <h5 class="card-title">Vibrant Motion</h5>
-                <p class="artist-name">Thomas Wu</p>
-                <p class="price">$540</p>
-                <div class="d-grid">
-                    <button class="btn btn-sm btn-primary mb-2">
-                    Add to Cart
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                    View Details
-                    </button>
-                </div>
-                </div>
-            </div>
-
-            <!-- Bookmark 3 -->
-            <div class="bookmark-card card">
-                <div class="bookmark-actions">
-                <button
-                    class="btn btn-sm text-danger"
-                    title="Remove from bookmarks"
-                >
-                    <i class="fas fa-times"></i>
-                </button>
-                </div>
-                <img
-                src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                class="card-img-top"
-                alt="Artwork"
-                />
-                <div class="card-body">
-                <h5 class="card-title">Digital Frontiers</h5>
-                <p class="artist-name">Alexis Chen</p>
-                <p class="price">$420</p>
-                <div class="d-grid">
-                    <button class="btn btn-sm btn-primary mb-2">
-                    Add to Cart
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                    View Details
-                    </button>
-                </div>
-                </div>
-            </div>
-
-            <!-- Bookmark 4 -->
-            <div class="bookmark-card card">
-                <div class="bookmark-actions">
-                <button
-                    class="btn btn-sm text-danger"
-                    title="Remove from bookmarks"
-                >
-                    <i class="fas fa-times"></i>
-                </button>
-                </div>
-                <img
-                src="https://images.unsplash.com/photo-1577720580479-7d839d829c73?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                class="card-img-top"
-                alt="Artwork"
-                />
-                <div class="card-body">
-                <h5 class="card-title">Eternal Light</h5>
-                <p class="artist-name">Sarah Miller</p>
-                <p class="price">$695</p>
-                <div class="d-grid">
-                    <button class="btn btn-sm btn-primary mb-2">
-                    Add to Cart
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                    View Details
-                    </button>
-                </div>
-                </div>
-            </div>
-
-            <!-- Bookmark 5 -->
-            <div class="bookmark-card card">
-                <div class="bookmark-actions">
-                <button
-                    class="btn btn-sm text-danger"
-                    title="Remove from bookmarks"
-                >
-                    <i class="fas fa-times"></i>
-                </button>
-                </div>
-                <img
-                src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                class="card-img-top"
-                alt="Artwork"
-                />
-                <div class="card-body">
-                <h5 class="card-title">Golden Horizon</h5>
-                <p class="artist-name">Marcus Rivera</p>
-                <p class="price">$750</p>
-                <div class="d-grid">
-                    <button class="btn btn-sm btn-primary mb-2">
-                    Add to Cart
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                    View Details
-                    </button>
-                </div>
-                </div>
-            </div>
-            </div>
+          </div>
         </div>
+      </main> </div><!-- Mobile sidebar toggle button --><div class="sidebar-toggle"> <i class="fas fa-bars"></i> </div> {% endblock %}
 
-
-        <!-- Other tabs (Commissions, Settings) would go here -->
-        </div>
-    </main>
-    </div>
-
-    <!-- Mobile sidebar toggle button -->
-    <div class="sidebar-toggle">
-    <i class="fas fa-bars"></i>
-    </div>
-{% endblock %}
-{% block footer %}{% endblock footer %}
-{% block extra_js %}
-    <script src="{% static 'js/dashboard.js' %}"></script>
-{% endblock %}
+      {% block extra_js %}
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script> // Toggle sidebar on mobile document.querySelector(".sidebar-toggle").addEventListener("click", function() { document.querySelector(".sidebar").classList.toggle("show"); }); // Hide sidebar when clicking outside on mobile document.addEventListener("click", function(event) { const sidebar = document.querySelector(".sidebar"); const sidebarToggle = document.querySelector(".sidebar-toggle"); if (window.innerWidth <= 767.98) { if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) { sidebar.classList.remove("show"); } } }); // Initialize tab if hash in URL document.addEventListener("DOMContentLoaded", function() { if (window.location.hash) { const tabTrigger = new bootstrap.Tab(document.querySelector(`a[href="${window.location.hash}"]`)); tabTrigger.show(); } // Initialize tooltips const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')); tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); }); // Quantity controls in cart document.querySelectorAll('.increase').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); input.stepUp(); this.parentNode.parentNode.submit(); }); }); document.querySelectorAll('.decrease').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); if (input.value > 1) { input.stepDown(); this.parentNode.parentNode.submit(); } }); }); // Sales chart for artists {% if request.user.artist_profile and sales_chart_data %} const ctx = document.getElementById('salesChart').getContext('2d'); const salesChart = new Chart(ctx, { type: 'line', data: { labels: {{ sales_chart_data.labels|safe }}, datasets: [{ label: 'Monthly Sales ($)', data: {{ sales_chart_data.data|safe }}, backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 2, tension: 0.1, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } }); {% endif %} }); </script>
+      
+      {% endblock %}

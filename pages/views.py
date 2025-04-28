@@ -35,7 +35,7 @@ def contact(request):
                 subject=subject,
                 message=email_message,
                 from_email=email,
-                recipient_list=['yahialinus21alg@gmail.com', 'yihak16553@cotigz.com'],  # Replace with your email
+                recipient_list=['lami39564@gmail.com', 'lamis16553@cotigz.com'],  # Replace with your email
                 fail_silently=False,
             )
             

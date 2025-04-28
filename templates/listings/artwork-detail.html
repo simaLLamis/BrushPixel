@@ -29,11 +29,13 @@
         <!-- Artwork Image -->
         <div class="col-lg-6 mb-4 mb-lg-0">
             <div class="artwork-image">
-            <img
-                src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                alt="Seaside Dreams Artwork"
-                id="mainImage"
-            />
+            {% with artwork.images.first as primary_image %}
+                {% if primary_image %}
+                <img src="{{ primary_image.image.url }}" alt="{{ artwork.title }}" id="mainImage">
+                {% else %}
+                    <img src="{% static './1.png' %}" alt="{{ artwork.title }}" id="mainImage">
+                {% endif %}
+            {% endwith %}
             </div>
             <div class="thumbnails">
             <div

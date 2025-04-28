@@ -4,6 +4,21 @@
   <link rel="stylesheet" href="{% static "css/index.css" %}">
 {% endblock extra_css %}
 {% block content %}
+
+<!-- Carousel Section -->
+<section class="carousel-section">
+  <div id="artworkCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <video autoplay width="1500" height="700" controls loop >
+          <source src="{{ MEDIA_URL}}artist_profiles/mp4.mp4"type="video">
+        </video>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
 <!-- Hero Section -->
 <section class="hero">
   <div class="container">
@@ -14,11 +29,9 @@
     </p>
     <div class="cta-buttons">
       <a href="#gallery" class="btn btn-primary">Browse Gallery</a>
-      <a href="#artists" class="btn btn-outline-light">Meet Artists</a>
     </div>
   </div>
 </section>
-
 <!-- About Us Section -->
 <section id="about" class="section-lg">
   <div class="container">
@@ -52,94 +65,9 @@
           We work directly with artists to ensure fair compensation and
           recognition for their talent.
         </p>
-        <a href="#" class="btn btn-link">Learn more about our journey</a>
+        <a href="./about.html" class="btn btn-link">Learn more about our journey</a>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- Carousel Section -->
-<section class="carousel-section">
-  <div id="artworkCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button
-        type="button"
-        data-bs-target="#artworkCarousel"
-        data-bs-slide-to="0"
-        class="active"
-        aria-current="true"
-        aria-label="Slide 1"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#artworkCarousel"
-        data-bs-slide-to="1"
-        aria-label="Slide 2"
-      ></button>
-      <button
-        type="button"
-        data-bs-target="#artworkCarousel"
-        data-bs-slide-to="2"
-        aria-label="Slide 3"
-      ></button>
-    </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img
-          src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-          class="d-block w-100"
-          alt="Featured Artwork"
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h3>Abstract Expressions</h3>
-          <p>
-            Our newest collection explores the boundaries of form and color.
-          </p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <img
-          src="https://images.unsplash.com/photo-1536924940846-227afb31e2a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-          class="d-block w-100"
-          alt="Featured Artwork"
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h3>Contemporary Landscapes</h3>
-          <p>Discover how modern artists interpret natural scenery.</p>
-        </div>
-      </div>
-      <div class="carousel-item">
-        <img
-          src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-          class="d-block w-100"
-          alt="Featured Artwork"
-        />
-        <div class="carousel-caption d-none d-md-block">
-          <h3>Digital Frontiers</h3>
-          <p>
-            Experience the intersection of technology and artistic vision.
-          </p>
-        </div>
-      </div>
-    </div>
-    <button
-      class="carousel-control-prev"
-      type="button"
-      data-bs-target="#artworkCarousel"
-      data-bs-slide="prev"
-    >
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button
-      class="carousel-control-next"
-      type="button"
-      data-bs-target="#artworkCarousel"
-      data-bs-slide="next"
-    >
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
   </div>
 </section>
 
@@ -152,24 +80,22 @@
         <div class="icon">
           <i class="fas fa-paint-brush"></i>
         </div>
-        <h3>Curated Collections</h3>
+        <h3>3D Prototyping</h3>
         <p>
           Explore our carefully selected collections of original artwork
           from emerging and established artists.
         </p>
-        <a href="#" class="btn btn-link">Browse collections</a>
       </div>
 
       <div class="service-card">
         <div class="icon">
           <i class="fas fa-comments"></i>
         </div>
-        <h3>Exceptional Customer Care</h3>
+        <h3>Scene Layout and Design</h3>
         <p>
           We provide personalized support throughout your art collecting
           journey.
         </p>
-        <a href="#" class="btn btn-link">Learn more</a>
       </div>
 
       <div class="service-card">
@@ -181,7 +107,6 @@
           Work directly with our talented artists to create something truly
           unique for your space.
         </p>
-        <a href="#" class="btn btn-link">Start a commission</a>
       </div>
 
       <div class="service-card">
@@ -193,7 +118,6 @@
           Learn how to start or expand your art collection as a meaningful
           investment.
         </p>
-        <a href="#" class="btn btn-link">Investment guide</a>
       </div>
     </div>
   </div>
@@ -408,7 +332,7 @@
               class="fas fa-phone me-2"
               style="color: var(--gray-400)"
             ></i>
-            (212) 555-7890
+            (+213) 770146821
           </p>
           <p>
             <i

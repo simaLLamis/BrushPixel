@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts',
+    'listings',
+    'pages',
 ]
 
 MIDDLEWARE = [
@@ -122,12 +125,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom settings
-INSTALLED_APPS += [
-    'accounts',
-    'pages',
-    'listings',
-]
 
 TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
 
@@ -139,7 +136,7 @@ STATICFILES_DIRS = [
 ]
 
 # Media files configuration
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR , 'media')
 MEDIA_URL = '/media/'
 
 # Auth configuration

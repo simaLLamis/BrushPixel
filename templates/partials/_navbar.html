@@ -44,15 +44,12 @@
               {% if user.customer_profile.profile_image %}
                 <img src="{{ user.customer_profile.profile_image.url }}" alt="Profile" 
                     class="profile-img rounded-circle me-2" width="32" height="32">
-              {% else %}
-                <img src="{% static 'images/default-profile.png' %}" alt="Profile"
-                    class="profile-img rounded-circle me-2" width="32" height="32">
               {% endif %}
               {{ user.get_full_name|default:user.username }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               {% if user.artist_profile %}
-                <li><a class="dropdown-item" href="{% url 'artist_dashboard' %}">Artist Dashboard</a></li>
+                <li><a class="dropdown-item" href="{% url 'dashboard' %}">Artist Dashboard</a></li>
               {% endif %}
               <li><a class="dropdown-item" href="{% url 'dashboard' %}">Dashboard</a></li>
               <li><a class="dropdown-item" href="{% url 'profile_settings' %}">Settings</a></li>
