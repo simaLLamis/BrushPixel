@@ -1,5 +1,31 @@
 from django.views.generic import TemplateView
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import render, redirect
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject', 'No Subject')
+        message = request.POST.get('message')
 
+        # Send email
+        try:
+            send_mail(
+                f"{subject} - From {name}",
+                f"From: {name} <{email}>\n\n{message}",
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.CONTACT_EMAIL],  # Your email here
+                fail_silently=False,
+            )
+            messages.success(request, 'Your message has been sent successfully!')
+        except Exception as e:
+            messages.error(request, f'Error sending message: {str(e)}')
+
+        return redirect('contact')
+    
+    return render(request, 'your_template.html')
 class IndexView(TemplateView):
     template_name = 'pages/index.html'
 
@@ -18,7 +44,16 @@ class PrivacyView(TemplateView):
 from django.shortcuts import redirect
 from django.core.mail import send_mail
 from django.contrib import messages
-
+from listings.models import Artwork 
+from .models import Testimonial
+class IndexView(TemplateView):
+    template_name = 'pages/index.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['trending_artworks'] = Artwork.objects.filter(is_trending=True)[:4]
+        context['testimonials'] = Testimonial.objects.order_by('-created_at')[:4]
+        return context
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')

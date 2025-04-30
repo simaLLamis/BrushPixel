@@ -267,7 +267,7 @@
             <a href="{% url 'gallery' %}" class="btn btn-outline-primary">
                 <i class="fas fa-arrow-left me-2"></i> Back to Gallery
             </a>
-            <a href="#" class="btn btn-primary btn-lg">
+            <a href="{% url 'checkout_review' %}" id="proceed-to-review" class="btn btn-primary btn-lg">
                 Review Order <i class="fas fa-arrow-right ms-2"></i>
             </a>
             </div>
@@ -278,69 +278,47 @@
             <div class="checkout-card">
             <h3>Order Summary</h3>
             <div class="order-items">
-                <!-- Item 1 -->
-                <div class="order-item">
-                <div class="order-item-image">
-                    <img
-                    src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    />
-                </div>
-                <div class="order-item-details">
-                    <h4 class="order-item-title">Seaside Dreams</h4>
-                    <p class="order-item-artist">Emma Parker</p>
-                </div>
-                <div class="order-item-price">$450</div>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="order-item">
-                <div class="order-item-image">
-                    <img
-                    src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    />
-                </div>
-                <div class="order-item-details">
-                    <h4 class="order-item-title">Golden Horizon</h4>
-                    <p class="order-item-artist">Marcus Rivera</p>
-                </div>
-                <div class="order-item-price">$750</div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="order-item">
-                <div class="order-item-image">
-                    <img
-                    src="https://images.unsplash.com/photo-1571115764595-644a1f56a55c?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
-                    alt="Artwork"
-                    />
-                </div>
-                <div class="order-item-details">
-                    <h4 class="order-item-title">Silent Echo</h4>
-                    <p class="order-item-artist">James Wilson</p>
-                </div>
-                <div class="order-item-price">$840</div>
-                </div>
+                {% if cart_items %}
+                    {% for artwork in cart_items %}
+                    <div class="order-item">
+                        <div class="order-item-image">
+                            {% with primary_image=artwork.images.all|dictsort:"is_primary"|last %}
+                                {% if artwork.images.all %}
+                                    <img src="{{ primary_image.image.url }}" alt="{{ artwork.title }}" />
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ artwork.title }}" />
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="order-item-details">
+                            <h4 class="order-item-title">{{ artwork.title }}</h4>
+                            <p class="order-item-artist">{{ artwork.artist.user.get_full_name }}</p>
+                        </div>
+                        <div class="order-item-price">${{ artwork.price }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Your cart is empty.</p>
+                {% endif %}
             </div>
 
             <!-- Order Totals -->
             <div class="order-summary-totals">
                 <div class="order-row">
                 <span>Subtotal:</span>
-                <span>$2,040.00</span>
+                <span>${{ subtotal|floatformat:2 }}</span>
                 </div>
                 <div class="order-row">
                 <span>Shipping:</span>
                 <span>Free</span>
                 </div>
                 <div class="order-row">
-                <span>Sales Tax (8%):</span>
-                <span>$163.20</span>
+                <span>Sales Tax ({{ tax_rate }}%):</span>
+                <span>${{ tax|floatformat:2 }}</span>
                 </div>
                 <div class="order-row total">
                 <span>Total:</span>
-                <span>$2,203.20</span>
+                <span>${{ total|floatformat:2 }}</span>
                 </div>
             </div>
 
@@ -398,6 +376,61 @@
 
 {% block extra_js %}
     <script>
+    // Form validation for the review button
+    document.getElementById('proceed-to-review').addEventListener('click', function(e) {
+        // Get all required fields in the form
+        const billingForm = document.getElementById('billing-form');
+        const requiredFields = billingForm.querySelectorAll('[required]');
+        const creditCardSelected = document.getElementById('creditCard').checked;
+        let formValid = true;
+        
+        // Check each required field
+        requiredFields.forEach(function(field) {
+            if (!field.value) {
+                formValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        // If credit card is selected, validate credit card fields
+        if (creditCardSelected) {
+            const cardFields = document.querySelectorAll('#creditCardForm [required]');
+            cardFields.forEach(function(field) {
+                if (!field.value) {
+                    formValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+        }
+        
+        if (!formValid) {
+            e.preventDefault();
+            // Scroll to the first invalid field
+            const firstInvalid = document.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
+                firstInvalid.focus();
+            }
+            
+            // Show alert message
+            if (!document.querySelector('.alert-validation')) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger alert-validation mt-3';
+                alert.innerHTML = 'Please fill in all required fields before proceeding to review.';
+                document.querySelector('.checkout-card').appendChild(alert);
+                
+                // Remove alert after 5 seconds
+                setTimeout(function() {
+                    alert.remove();
+                }, 5000);
+            }
+        }
+    });
+
     // Handle payment method selection
     document
         .querySelectorAll('input[name="paymentMethod"]')

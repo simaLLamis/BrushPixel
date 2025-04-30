@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ artwork.title }} by {{ artwork.artist.user.get_full_name }} | Brush & Pixel{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static "css/artwork-detail.css" %}">
+{% endblock %}
+
+{% block content %}
+    <!-- Page Header with Breadcrumbs -->
+    <section class="page-header">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'gallery' %}">Gallery</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ artwork.title }}
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Artwork Details -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Artwork Image -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="artwork-image">
+                        {% with artwork.images.first as primary_image %}
+                            {% if primary_image %}
+                                <img src="{{ primary_image.image.url }}" alt="{{ artwork.title }}" id="mainImage">
+                            {% else %}
+                                <img src="{% static 'img/placeholder.jpg' %}" alt="{{ artwork.title }}" id="mainImage">
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="thumbnails">
+                        {% for image in artwork.images.all %}
+                            <div class="thumbnail {% if forloop.first %}active{% endif %}" 
+                                 onclick="changeImage('{{ image.image.url }}')">
+                                <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Artwork Details -->
+                <div class="col-lg-6">
+                    <div class="artwork-details">
+                        {% if artwork.is_new %}
+                            <span class="badge bg-accent mb-2">New</span>
+                        {% endif %}
+                        <h1>{{ artwork.title }}</h1>
+                        <p class="artist-name">By {{ artwork.artist.user.get_full_name }}</p>
+                        <p class="artwork-price">${{ artwork.price }}</p>
+
+                        <div class="artwork-availability mb-4">
+                            <p class="mb-1">
+                                <i class="fas fa-check-circle me-2" style="color: green"></i>
+                                {% if artwork.status == 'available' %}
+                                    In stock - Ready to ship
+                                {% else %}
+                                    {{ artwork.get_status_display }}
+                                {% endif %}
+                            </p>
+                            <p class="mb-0 text-sm">
+                                <i class="fas fa-shipping-fast me-2"></i> Free shipping to US, EU, and Canada
+                            </p>
+                        </div>
+
+                        <div class="artwork-description mb-4">
+                            <p>{{ artwork.description }}</p>
+                        </div>
+
+                        <div class="cta-buttons mb-4">
+                            {% if artwork.status == 'available' %}
+                                <a href="{% url 'checkout_with_artwork' artwork.id %}" class="btn btn-primary">
+                                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                </a>
+                                <a href="{% url 'checkout_with_artwork' artwork.id %}" class="btn btn-secondary"> Buy Now </a>
+                            {% endif %}
+                            <button class="btn btn-outline-primary">
+                                <i class="far fa-heart"></i> Add to Wishlist
+                            </button>
+                        </div>
+
+                        <div class="specs-section">
+                            <h3>Specifications</h3>
+                            <ul class="specs-list">
+                                <li>
+                                    <span class="specs-label">Medium</span>
+                                    <span>{{ artwork.get_medium_display }}</span>
+                                </li>
+                                <li>
+                                    <span class="specs-label">Dimensions</span>
+                                    <span>{{ artwork.dimensions }}</span>
+                                </li>
+                                <li>
+                                    <span class="specs-label">Year</span>
+                                    <span>{{ artwork.year_created }}</span>
+                                </li>
+                                <li>
+                                    <span class="specs-label">Style</span>
+                                    <span>{{ artwork.style }}</span>
+                                </li>
+                                <li>
+                                    <span class="specs-label">Framing</span>
+                                    <span>{{ artwork.get_framing_display }}</span>
+                                </li>
+                                <li>
+                                    <span class="specs-label">Certificate</span>
+                                    <span>
+                                        {% if artwork.has_certificate %}
+                                            Includes Certificate of Authenticity
+                                        {% else %}
+                                            No certificate
+                                        {% endif %}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Artist info -->
+                        <div class="artist-card d-flex align-items-start">
+                            {% if artwork.artist.profile_image %}
+                                <img src="{{ artwork.artist.profile_image.url }}" 
+                                     alt="{{ artwork.artist.user.get_full_name }}"
+                                     class="artist-img">
+                            {% else %}
+                                <img src="{% static 'img/artist-placeholder.jpg' %}" 
+                                     alt="{{ artwork.artist.user.get_full_name }}"
+                                     class="artist-img">
+                            {% endif %}
+                            <div>
+                                <h4 class="mb-1">{{ artwork.artist.user.get_full_name }}</h4>
+                                <p class="mb-2">
+                                    {{ artwork.artist.bio|truncatewords:30 }}
+                                </p>
+                                <a href="{% url 'dashboard' %}" class="btn btn-link">
+                                    View artist profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Information Tabs -->
+    <!-- ... (rest of the tabs section remains similar, using artwork data where appropriate) ... -->
+
+    <!-- Related Artwork -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="related-title">Related Artwork</h2>
+            <div class="related-artwork">
+                {% for related in related_artworks %}
+                    <div class="artwork-card">
+                        <a href="{% url 'artwork_detail_slug' related.slug %}">
+                            {% with related.images.first as primary_image %}
+                                {% if primary_image %}
+                                    <img src="{{ primary_image.image.url }}" class="card-img-top" alt="{{ related.title }}">
+                                {% else %}
+                                    <img src="{% static 'img/placeholder.jpg' %}" class="card-img-top" alt="{{ related.title }}">
+                                {% endif %}
+                            {% endwith %}
+                        </a>
+                        <div class="card-body">
+                            {% if related.is_new %}
+                                <span class="badge bg-accent mb-2">New</span>
+                            {% endif %}
+                            <h4 class="card-title">{{ related.title }}</h4>
+                            <p class="artist-name">{{ related.artist.user.get_full_name }}</p>
+                            <p class="price">${{ related.price }}</p>
+                            <a href="{% url 'artwork_detail_slug' related.slug %}" class="btn btn-link">View details</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function changeImage(imageUrl) {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = imageUrl;
+        
+        // Update active thumbnail
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumb => {
+            thumb.classList.remove('active');
+            if (thumb.querySelector('img').src === imageUrl) {
+                thumb.classList.add('active');
+            }
+        });
+    }
+</script>
+{% endblock %}

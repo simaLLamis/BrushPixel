@@ -150,7 +150,13 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Email backend - this uses SMTP for production
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
+EMAIL_HOST = 'smtp.your-email-provider.com'  # e.g., smtp.gmail.com
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'lami39564@example.com'
+#EMAIL_HOST_PASSWORD = 'your-email-password'
+DEFAULT_FROM_EMAIL = 'lami39564@example.com'
+CONTACT_EMAIL = 'lami39564@example.com'  # Where you want to receive messages
 # SMTP server settings
 EMAIL_HOST = 'smtp.gmail.com'  # e.g., smtp.gmail.com for Gmail
 EMAIL_PORT = 587  # Common ports: 587 (TLS), 465 (SSL)

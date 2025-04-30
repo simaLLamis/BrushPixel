@@ -39,7 +39,7 @@
 
           /* Brand colors */
           --bp-primary: var(--neon-cyan);
-          --bp-secondary: #a67c52;
+          --bp-secondary: #f0f;
           --bp-accent: #d3b88c;
           --bp-dark: #2b3a42;
 
@@ -201,8 +201,8 @@
         }
 
         .btn-secondary:hover {
-          background-color: #8d6a47;
-          border-color: #8d6a47;
+          background-color: #f0f;
+          border-color: #f0f;
         }
 
         h1 {

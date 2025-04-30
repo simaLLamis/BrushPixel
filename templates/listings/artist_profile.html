@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ artist.user.get_full_name }} | Brush & Pixel{% endblock %}
+
+{% block content %}
+<!-- Page Header with Breadcrumbs -->
+<section class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'gallery' %}">Artists</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ artist.user.get_full_name }}
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            {% if artist.profile_image %}
+                <img src="{{ artist.profile_image.url }}" alt="{{ artist.user.get_full_name }}" class="img-fluid rounded-circle mb-4">
+            {% else %}
+                <img src="{% static 'img/artist-placeholder.jpg' %}" alt="{{ artist.user.get_full_name }}" class="img-fluid rounded-circle mb-4">
+            {% endif %}
+            <h1>{{ artist.user.get_full_name }}</h1>
+            {% if artist.location %}
+                <p><i class="fas fa-map-marker-alt"></i> {{ artist.location }}</p>
+            {% endif %}
+            
+            {% if artist.website %}
+                <p><a href="{{ artist.website }}" target="_blank" class="btn btn-outline-primary mt-3"><i class="fas fa-globe"></i> Visit Website</a></p>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            {% if artist.bio %}
+                <h3>About the Artist</h3>
+                <div class="artist-bio">
+                    {{ artist.bio|linebreaks }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2>Artworks by {{ artist.user.get_full_name }}</h2>
+            <hr>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        {% for artwork in artworks %}
+            <div class="col-md-4 mb-4">
+                <div class="artwork-card">
+                    <a href="{% url 'artwork_detail_slug' artwork.slug %}">
+                        {% with artwork.images.first as primary_image %}
+                            {% if primary_image %}
+                                <img src="{{ primary_image.image.url }}" class="card-img-top" alt="{{ artwork.title }}">
+                            {% else %}
+                                <img src="{% static 'img/placeholder.jpg' %}" class="card-img-top" alt="{{ artwork.title }}">
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                    <div class="card-body">
+                        {% if artwork.is_new %}
+                            <span class="badge bg-accent mb-2">New</span>
+                        {% endif %}
+                        <h4 class="card-title">{{ artwork.title }}</h4>
+                        <p class="price">${{ artwork.price }}</p>
+                        <p class="artwork-specs">{{ artwork.get_medium_display }} • {{ artwork.dimensions }}</p>
+                        <a href="{% url 'artwork_detail_slug' artwork.slug %}" class="btn btn-link">View details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p>No artworks available from this artist at the moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

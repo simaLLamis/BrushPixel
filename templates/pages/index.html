@@ -5,19 +5,6 @@
 {% endblock extra_css %}
 {% block content %}
 
-<!-- Carousel Section -->
-<section class="carousel-section">
-  <div id="artworkCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <video autoplay width="1500" height="700" controls loop >
-          <source src="{{ MEDIA_URL}}artist_profiles/mp4.mp4"type="video">
-        </video>
-      </div>
-    </div>
-    
-  </div>
-</section>
 
 <!-- Hero Section -->
 <section class="hero">
@@ -29,6 +16,18 @@
     </p>
     <div class="cta-buttons">
       <a href="#gallery" class="btn btn-primary">Browse Gallery</a>
+    </div>
+  </div>
+</section>
+<!-- Carousel Section -->
+<section class="carousel-section">
+  <div id="artworkCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <video autoplay muted loop width="100%" height="700" id="bg-video">
+          <source src="{% static 'videos/mp1.mp4' %}" type="video/mp4">
+        </video>
+      </div>
     </div>
   </div>
 </section>
@@ -49,7 +48,7 @@
       <div class="col-lg-6">
         <h3>Our Story</h3>
         <p class="lead">
-          Founded in 2018, Brush & Pixel was born from a passion for
+          Founded in 2023, Brush & Pixel was born from a passion for
           connecting talented artists with art lovers worldwide.
         </p>
         <p>
@@ -65,7 +64,7 @@
           We work directly with artists to ensure fair compensation and
           recognition for their talent.
         </p>
-        <a href="./about.html" class="btn btn-link">Learn more about our journey</a>
+        <a href={% url 'about'%} class="btn btn-link">Learn more about our journey</a>
       </div>
     </div>
   </div>
@@ -124,20 +123,18 @@
 </section>
 
 <!-- Gallery Section -->
-<section id="gallery" class="section-lg ">
+<section id="gallery" class="section-lg">
   <div class="container">
     <h2 class="section-title">Trending Artwork</h2>
     <div class="artwork-grid">
       {% for artwork in trending_artworks %}
       <div class="artwork-card">
-        <img
-          src="{{ artwork.image.url }}"
-          class="card-img-top"
-          alt="{{ artwork.title }}"
-        />
+        {% if artwork.image %}
+          <img src="{{ artwork.image.url }}" class="card-img-top" alt="{{ artwork.title }}">
+        {% endif %}
         <div class="card-body">
           <h4 class="card-title">{{ artwork.title }}</h4>
-          <p class="artist-name">{{ artwork.artist.name }}</p>
+          <p class="artist-name">{{ artwork.artist.get_full_name }}</p>
           <p class="price">${{ artwork.price }}</p>
           <a href="{% url 'artwork_detail' artwork.id %}" class="btn btn-link">View details</a>
         </div>
@@ -145,11 +142,11 @@
       {% empty %}
       <!-- Fallback static content if no artworks in database yet -->
       <div class="artwork-card">
-        <img
-          src="https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80"
+        <video
+          src="https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.youtube.com/watch%3Fv%3DeO8E58lsyag&ved=2ahUKEwiIz4XT-f2MAxXcVqQEHRwEFEsQ9KsOegQIDRAB&usg=AOvVaw2o3CzFbDYCqNxerh8X51TN"
           class="card-img-top"
           alt="Artwork"
-        />
+        ></video>
         <div class="card-body">
           <h4 class="card-title">Seaside Dreams</h4>
           <p class="artist-name">Emma Parker</p>
@@ -273,6 +270,18 @@
 <section id="contact" class="section-lg">
   <div class="container">
     <h2 class="section-title">Get In Touch</h2>
+    <!-- Messages block -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
     <div class="row">
       <div class="col-lg-6 mb-5 mb-lg-0">
         <div class="contact-form">

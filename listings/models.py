@@ -58,7 +58,7 @@ class Artwork(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     is_new = models.BooleanField(default=True)
     views = models.IntegerField(default=0)
-    
+    is_trending = models.BooleanField(default=False)  # Add this line
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -66,7 +66,10 @@ class Artwork(models.Model):
     
     def __str__(self):
         return f"{self.title} by {self.artist.user.get_full_name()}"
-    
+    @property
+    def primary_image(self):
+        primary = self.images.filter(is_primary=True).first()
+        return primary or self.images.first()
     @property
     def average_rating(self):
         reviews = self.reviews.all()

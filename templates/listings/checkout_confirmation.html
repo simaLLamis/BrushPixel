@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}Order Confirmation | Brush & Pixel{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/payement.css' %}" />
+    <style>
+        /* Additional styles for confirmation page */
+        .confirmation-header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .confirmation-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+        
+        .order-number {
+            background-color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .next-steps {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .next-steps h4 {
+            margin-bottom: 1rem;
+        }
+        
+        .next-steps-list {
+            padding-left: 1.5rem;
+        }
+        
+        .next-steps-list li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .confirmation-cta {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .confirmation-cta .btn {
+            margin: 0 0.5rem;
+        }
+        
+        @media print {
+            .confirmation-cta, .page-header, footer {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Page Header with Breadcrumbs -->
+    <section class="page-header">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'gallery' %}">Gallery</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Order Confirmation</li>
+        </ol>
+        </nav>
+    </div>
+    </section>
+
+    <!-- Confirmation Section -->
+    <section class="py-5">
+    <div class="container">
+        <!-- Checkout Progress Steps -->
+        <div class="checkout-steps">
+        <div class="step completed">
+            <div class="step-number">
+            <i class="fas fa-check"></i>
+            </div>
+            <div class="step-title">Shopping Cart</div>
+        </div>
+        <div class="step completed">
+            <div class="step-number">
+            <i class="fas fa-check"></i>
+            </div>
+            <div class="step-title">Payment</div>
+        </div>
+        <div class="step completed">
+            <div class="step-number">
+            <i class="fas fa-check"></i>
+            </div>
+            <div class="step-title">Review</div>
+        </div>
+        <div class="step completed active">
+            <div class="step-number">
+            <i class="fas fa-check"></i>
+            </div>
+            <div class="step-title">Confirmation</div>
+        </div>
+        </div>
+
+        <!-- Confirmation Message -->
+        <div class="confirmation-header">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Thank You for Your Order!</h2>
+            <p class="lead">Your order has been received and is being processed.</p>
+            <p>Order Number: <span class="order-number">{{ order_number }}</span></p>
+            <p>A confirmation email has been sent to <strong>{{ billing.email }}</strong></p>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-lg-8">
+                <!-- Order Details -->
+                <div class="checkout-card">
+                    <h3>Order Details</h3>
+                    
+                    <div class="review-order-items">
+                        {% if cart_items %}
+                            {% for artwork in cart_items %}
+                            <div class="review-order-item">
+                                <div class="order-item-image">
+                                    {% with primary_image=artwork.images.all|dictsort:"is_primary"|last %}
+                                        {% if artwork.images.all %}
+                                            <img src="{{ primary_image.image.url }}" alt="{{ artwork.title }}" />
+                                        {% else %}
+                                            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ artwork.title }}" />
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div class="order-item-details">
+                                    <h5 class="order-item-title">{{ artwork.title }}</h5>
+                                    <p class="order-item-artist">{{ artwork.artist.user.get_full_name }}</p>
+                                    <p class="order-item-medium">{{ artwork.medium }}</p>
+                                    <p class="order-item-dimensions">{{ artwork.dimensions }}</p>
+                                </div>
+                                <div class="order-item-price">${{ artwork.price }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No items in your order.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Next Steps -->
+                <div class="next-steps">
+                    <h4>What happens next?</h4>
+                    <ul class="next-steps-list">
+                        <li>You will receive a confirmation email with your order details.</li>
+                        <li>Our team will prepare your artwork with care, including a certificate of authenticity.</li>
+                        <li>Your order will be shipped within 3-5 business days.</li>
+                        <li>You will receive shipping confirmation and tracking information once your order is on its way.</li>
+                        <li>If you have any questions about your order, please contact our customer service team.</li>
+                    </ul>
+                </div>
+                
+                <!-- Call to Action Buttons -->
+                <div class="confirmation-cta">
+                    <a href="{% url 'index' %}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i> Return to Homepage
+                    </a>
+                    <button onclick="window.print()" class="btn btn-outline-secondary">
+                        <i class="fas fa-print me-2"></i> Print Order Details
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Order Summary -->
+                <div class="checkout-card">
+                    <h3>Order Summary</h3>
+                    <div class="order-summary-totals">
+                        <div class="order-row">
+                            <span>Subtotal:</span>
+                            <span>${{ subtotal|floatformat:2 }}</span>
+                        </div>
+                        <div class="order-row">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="order-row">
+                            <span>Sales Tax:</span>
+                            <span>${{ tax|floatformat:2 }}</span>
+                        </div>
+                        <div class="order-row total">
+                            <span>Total:</span>
+                            <span>${{ total|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Customer Support -->
+                <div class="checkout-card mt-4">
+                    <h3>Need Help?</h3>
+                    <p>
+                        Our customer service team is here to assist you with your order.
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-phone me-2"></i> (212) 555-7890
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope me-2"></i> support@brushandpixel.com
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-clock me-2"></i> Mon-Fri: 9am-6pm EST
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+{% endblock %}

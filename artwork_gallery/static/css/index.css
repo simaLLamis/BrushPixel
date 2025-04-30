@@ -549,7 +549,14 @@ footer a:hover {
   margin-right: var(--space-2);
   transition: all 0.3s ease;
 }
-
+#bg-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1; /* Place behind other content */
+}
 .social-icons a:hover {
   background-color: var(--neon-cyan);
   color: var(--dark-bg);
