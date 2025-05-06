@@ -150,13 +150,13 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Email backend - this uses SMTP for production
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.your-email-provider.com'  # e.g., smtp.gmail.com
+EMAIL_HOST = 'smtp.gmail.com'  # e.g., smtp.gmail.com
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'lami39564@example.com'
+EMAIL_HOST_USER = 'lami39564@gmail.com'
 #EMAIL_HOST_PASSWORD = 'your-email-password'
-DEFAULT_FROM_EMAIL = 'lami39564@example.com'
-CONTACT_EMAIL = 'lami39564@example.com'  # Where you want to receive messages
+DEFAULT_FROM_EMAIL = 'lami39564@gmail.com'
+CONTACT_EMAIL = 'lami39564@gmail.com'  # Where you want to receive messages
 # SMTP server settings
 EMAIL_HOST = 'smtp.gmail.com'  # e.g., smtp.gmail.com for Gmail
 EMAIL_PORT = 587  # Common ports: 587 (TLS), 465 (SSL)
@@ -164,10 +164,10 @@ EMAIL_USE_TLS = True  # Use TLS encryption
 # EMAIL_USE_SSL = False  # Uncomment if using SSL instead of TLS
 
 # Authentication credentials
-EMAIL_HOST_USER = 'yahialinus21alg@gmail.com'  # Your email address
-EMAIL_HOST_PASSWORD = 'tcwg hexf dnpk qlhu'  # Your email password or app password
+EMAIL_HOST_USER = 'lami39564@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'lamislamislamis'  # Your email password or app password
 
 
 
 # For development/testing, you can use the console backend instead:
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

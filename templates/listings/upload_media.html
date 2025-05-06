@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Upload Media for {{ artwork.title }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url "index" %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url "gallery" %}">Gallery</a></li>
+                <li class="breadcrumb-item"><a href="{% url "artwork_detail" artwork_id=artwork.id %}">{{ artwork.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Upload Media</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Upload Images or Videos</h2>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data" action="{% url 'upload_artwork_media' artwork_id=artwork.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Media Type</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="media_type" id="media_type_image" value="image" checked>
+                                    <label class="btn btn-outline-primary" for="media_type_image">Image</label>
+                                    
+                                    <input type="radio" class="btn-check" name="media_type" id="media_type_video" value="video">
+                                    <label class="btn btn-outline-primary" for="media_type_video">Video</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="media_file" class="form-label">Select File</label>
+                                <input type="file" class="form-control" id="media_file" name="media_file" required>
+                                <div class="form-text" id="file_help">
+                                    <div id="image_help">
+                                        Supported image formats: JPG, PNG, GIF, WEBP. Maximum file size: 10MB.
+                                    </div>
+                                    <div id="video_help" style="display: none;">
+                                        Supported video formats: MP4, WEBM, MOV, AVI. Maximum file size: 100MB.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4" id="thumbnail_container" style="display: none;">
+                                <label for="thumbnail" class="form-label">Video Thumbnail (Optional)</label>
+                                <input type="file" class="form-control" id="thumbnail" name="thumbnail">
+                                <div class="form-text">
+                                    Upload a thumbnail image for the video. If not provided, a default thumbnail will be used.
+                                </div>
+                            </div>
+
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="is_primary" name="is_primary">
+                                <label class="form-check-label" for="is_primary">Set as primary media</label>
+                                <div class="form-text">
+                                    The primary media will be shown as the main representation of your artwork in the gallery.
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Upload Media</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show/hide fields based on media type selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const mediaTypeImage = document.getElementById('media_type_image');
+        const mediaTypeVideo = document.getElementById('media_type_video');
+        const thumbnailContainer = document.getElementById('thumbnail_container');
+        const imageHelp = document.getElementById('image_help');
+        const videoHelp = document.getElementById('video_help');
+        
+        function updateFormFields() {
+            if (mediaTypeVideo.checked) {
+                thumbnailContainer.style.display = 'block';
+                imageHelp.style.display = 'none';
+                videoHelp.style.display = 'block';
+            } else {
+                thumbnailContainer.style.display = 'none';
+                imageHelp.style.display = 'block';
+                videoHelp.style.display = 'none';
+            }
+        }
+        
+        mediaTypeImage.addEventListener('change', updateFormFields);
+        mediaTypeVideo.addEventListener('change', updateFormFields);
+        
+        // Initialize form state
+        updateFormFields();
+    });
+</script>
+{% endblock %}

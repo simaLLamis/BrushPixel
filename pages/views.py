@@ -51,9 +51,16 @@ class IndexView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Get trending artworks from the database
         context['trending_artworks'] = Artwork.objects.filter(is_trending=True)[:4]
+        # Get latest testimonials
         context['testimonials'] = Testimonial.objects.order_by('-created_at')[:4]
         return context
+class AboutView(TemplateView):
+    template_name = 'pages/about.html'
+class TermsView(TemplateView):
+    template_name = 'pages/terms.html'
+
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -69,18 +76,21 @@ def contact(request):
             send_mail(
                 subject=subject,
                 message=email_message,
-                from_email=email,
-                recipient_list=['lami39564@gmail.com', 'lamis16553@cotigz.com'],  # Replace with your email
+                from_email=settings.DEFAULT_FROM_EMAIL,  # Use Django's configured email
+                recipient_list=['lami39564@gmail.com', 'lami39564@gmail.com'],
                 fail_silently=False,
             )
             
             # Add success message
             messages.success(request, "Thank you for your message! We'll get back to you soon.")
-            return redirect('index')  # Redirect to the same page after submission
             
         except Exception as e:
-            # Handle any errors that occur during email sending
-            messages.error(request, f"Sorry, there was an error sending your message. Please try again later.")
-            
-    # For GET requests, just render the contact page
-    return redirect(request, 'index')  # Assuming your template is named contact.html
+            # Add error message with details
+            messages.error(request, f"Error sending message: {str(e)}")
+            print(f"Email error: {str(e)}")  # Log the error for debugging
+        
+        # Redirect to index page with anchor to contact section
+        return redirect('index')  # Optionally: return redirect('index') + '#contact'
+    
+    # If someone accesses this URL directly with GET, redirect to index
+    return redirect('index')

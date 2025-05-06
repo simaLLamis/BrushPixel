@@ -1,13 +1,17 @@
 # accounts/views.py
 from django.views.generic import TemplateView
-
 class DashboardView(TemplateView):
     template_name = 'registration/dashboard.html'
 
 
 class SettingsView(TemplateView):
-    template_name = 'registration/settings.html'
-
+    template_name = 'registration/dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_section'] = 'settings'
+        return context
+        
 
 
 from django.shortcuts import render, redirect

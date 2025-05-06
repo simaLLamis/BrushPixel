@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_.html" %}
 {% load static %}
 
 {% block title %}Dashboard | Brush & Pixel{% endblock %}
@@ -363,7 +363,7 @@
                     </div>
                   {% endif %}
                 </div>
-                <h4 class="mb-1">lamis</h4>
+                <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
                 <p class="text-muted mb-3">
                   {% if request.user.artist_profile %}
                     <span class="badge bg-primary">Artist</span>
@@ -428,7 +428,7 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label class="form-label">First Name</label>
-                    <p class="form-control-static">lamis</p>
+                    <p class="form-control-static">{{ user.get_full_name|default:user.username }}</p>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Last Name</label>
@@ -1233,6 +1233,10 @@
       </main> </div><!-- Mobile sidebar toggle button --><div class="sidebar-toggle"> <i class="fas fa-bars"></i> </div> {% endblock %}
 
       {% block extra_js %}
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script> // Toggle sidebar on mobile document.querySelector(".sidebar-toggle").addEventListener("click", function() { document.querySelector(".sidebar").classList.toggle("show"); }); // Hide sidebar when clicking outside on mobile document.addEventListener("click", function(event) { const sidebar = document.querySelector(".sidebar"); const sidebarToggle = document.querySelector(".sidebar-toggle"); if (window.innerWidth <= 767.98) { if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) { sidebar.classList.remove("show"); } } }); // Initialize tab if hash in URL document.addEventListener("DOMContentLoaded", function() { if (window.location.hash) { const tabTrigger = new bootstrap.Tab(document.querySelector(`a[href="${window.location.hash}"]`)); tabTrigger.show(); } // Initialize tooltips const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')); tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); }); // Quantity controls in cart document.querySelectorAll('.increase').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); input.stepUp(); this.parentNode.parentNode.submit(); }); }); document.querySelectorAll('.decrease').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); if (input.value > 1) { input.stepDown(); this.parentNode.parentNode.submit(); } }); }); // Sales chart for artists {% if request.user.artist_profile and sales_chart_data %} const ctx = document.getElementById('salesChart').getContext('2d'); const salesChart = new Chart(ctx, { type: 'line', data: { labels: {{ sales_chart_data.labels|safe }}, datasets: [{ label: 'Monthly Sales ($)', data: {{ sales_chart_data.data|safe }}, backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 2, tension: 0.1, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } }); {% endif %} }); </script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script> 
+        document.querySelector(".sidebar-toggle").addEventListener("click", function() {
+          document.querySelector(".sidebar").classList.toggle("show");
+      });
+      // Toggle sidebar on mobile document.querySelector(".sidebar-toggle").addEventListener("click", function() { document.querySelector(".sidebar").classList.toggle("show"); }); // Hide sidebar when clicking outside on mobile document.addEventListener("click", function(event) { const sidebar = document.querySelector(".sidebar"); const sidebarToggle = document.querySelector(".sidebar-toggle"); if (window.innerWidth <= 767.98) { if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target)) { sidebar.classList.remove("show"); } } }); // Initialize tab if hash in URL document.addEventListener("DOMContentLoaded", function() { if (window.location.hash) { const tabTrigger = new bootstrap.Tab(document.querySelector(`a[href="${window.location.hash}"]`)); tabTrigger.show(); } // Initialize tooltips const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')); tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl); }); // Quantity controls in cart document.querySelectorAll('.increase').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); input.stepUp(); this.parentNode.parentNode.submit(); }); }); document.querySelectorAll('.decrease').forEach(button => { button.addEventListener('click', function() { const input = this.parentNode.querySelector('input[type=number]'); if (input.value > 1) { input.stepDown(); this.parentNode.parentNode.submit(); } }); }); // Sales chart for artists {% if request.user.artist_profile and sales_chart_data %} const ctx = document.getElementById('salesChart').getContext('2d'); const salesChart = new Chart(ctx, { type: 'line', data: { labels: {{ sales_chart_data.labels|safe }}, datasets: [{ label: 'Monthly Sales ($)', data: {{ sales_chart_data.data|safe }}, backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 2, tension: 0.1, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } } }); {% endif %} }); </script>
       
       {% endblock %}
