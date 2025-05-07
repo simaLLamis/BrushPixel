@@ -24,6 +24,6 @@ if __name__ == '__main__':
     from django.core.management import execute_from_command_line
     
     # This ensures your app binds to 0.0.0.0 and uses Render's PORT
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'artwork_gallery.settings')
     sys.argv = ['manage.py', 'runserver', f"0.0.0.0:{os.environ.get('PORT', '8000')}"]
     execute_from_command_line(sys.argv)
