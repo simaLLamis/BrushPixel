@@ -25,11 +25,7 @@ SECRET_KEY = 'django-insecure-i-4x1cui+o4kv4tksr8w2$1$kr7(-8jgabp(my%y*d459+4j%(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-'brushpixel.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
